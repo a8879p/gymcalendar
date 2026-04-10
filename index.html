@@ -1,1291 +1,2288 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Дневник Тренировок</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#0d0d12;
-  --surface:#14141c;
-  --surface2:#1c1c28;
-  --border:#252535;
-  --border2:#2e2e42;
-  --txt:#e8e8f4;
-  --txt2:#9090b0;
-  --txt3:#55556a;
-  --accent:#ff4f00;
-  --accent2:#ff8c00;
-  --blue:#3b8cff;
-  --green:#00e57a;
-  --red:#ff3b5c;
-  --yellow:#ffd000;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Barlow',sans-serif;
-  background:var(--bg);
-  color:var(--txt);
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  background-image:
-    radial-gradient(ellipse 60% 40% at 80% -10%, rgba(255,79,0,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 30% at 10% 100%, rgba(59,140,255,0.08) 0%, transparent 50%);
-}
-.app{padding:1rem 1rem 0.5rem;flex:1;display:flex;flex-direction:column;max-width:100%;}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Дневник Тренировок</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #0d0d12;
+      --surface: #14141c;
+      --surface2: #1c1c28;
+      --border: #252535;
+      --border2: #2e2e42;
+      --txt: #e8e8f4;
+      --txt2: #9090b0;
+      --txt3: #55556a;
+      --accent: #ff4f00;
+      --accent2: #ff8c00;
+      --blue: #3b8cff;
+      --green: #00e57a;
+      --red: #ff3b5c;
+      --yellow: #ffd000;
+    }
 
-/* ШАПКА */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 2px;margin-bottom:1rem;position:relative}
-.hdr-nav{display:flex;align-items:center;gap:4px}
-.nav-btn{
-  background:var(--surface2);
-  border:1px solid var(--border2);
-  border-radius:8px;
-  color:var(--accent);
-  font-size:20px;font-weight:800;
-  cursor:pointer;padding:4px 12px;line-height:1;
-  transition:all 0.15s;
-}
-.nav-btn:hover{background:var(--border2);color:#fff}
-.month-title{
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:26px;font-weight:800;
-  color:var(--txt);
-  min-width:220px;
-  letter-spacing:0.02em;
-  text-transform:uppercase;
-}
-.editor-btn{
-  background:var(--surface2);
-  border:1px solid var(--border2);
-  border-radius:8px;padding:7px 36px;
-  cursor:pointer;font-size:13px;font-weight:600;
-  color:var(--txt2);
-  transition:all 0.15s;
-  letter-spacing:0.02em;
-  white-space:nowrap;flex-shrink:0;
-}
-.editor-btn:hover{background:var(--border2);color:var(--txt)}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* РЕДАКТОР ДРОПДАУН */
-.editor-drop{
-  display:none;position:fixed;
-  width:300px;
-  background:var(--surface);
-  border:1px solid var(--border2);
-  border-radius:14px;z-index:600;padding:14px;
-  box-shadow:0 8px 40px rgba(0,0,0,0.7);
-}
-.editor-drop.open{display:block}
-.editor-drop-title{font-size:13px;font-weight:700;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
-.ex-listbox{border:1px solid var(--border);border-radius:10px;max-height:240px;overflow-y:auto;margin-bottom:8px;background:var(--bg)}
-.ex-listbox-item{padding:9px 12px;font-size:13px;color:var(--txt);cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.1s}
-.ex-listbox-item:last-child{border-bottom:none}
-.ex-listbox-item:hover{background:var(--surface2)}
-.ex-listbox-item.sel{background:var(--accent);color:#fff}
-.editor-btns{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px}
-.ed-btn{border:1px solid var(--border2);background:var(--surface2);border-radius:8px;padding:7px 4px;font-size:12px;cursor:pointer;color:var(--txt);font-weight:600;text-align:center;transition:all 0.15s}
-.ed-btn:hover{background:var(--border2)}
-.ed-btn.blue{background:var(--blue);color:#fff;border-color:var(--blue)}
-.ed-btn.red{background:var(--red);color:#fff;border-color:var(--red)}
-.ed-btn:disabled{opacity:0.3;cursor:default;pointer-events:none}
-.editor-input-row{display:flex;gap:6px}
-.editor-input{flex:1;border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:13px;background:var(--bg);color:var(--txt);outline:none}
-.editor-input:focus{border-color:var(--accent)}
-.editor-input-ok{background:var(--accent);border:none;border-radius:8px;padding:8px 14px;font-size:13px;color:#fff;cursor:pointer;font-weight:700}
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image:
+        radial-gradient(ellipse 60% 40% at 80% -10%, rgba(255, 79, 0, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 10% 100%, rgba(59, 140, 255, 0.08) 0%, transparent 50%);
+    }
 
-/* ДНИ НЕДЕЛИ */
-.wdays{display:grid;grid-template-columns:repeat(7,1fr);gap:0;border-bottom:1px solid var(--border)}
-.wd{
-  text-align:center;
-  font-family:'Barlow',sans-serif;
-  font-size:11px;font-weight:700;
-  color:var(--txt3);
-  padding:6px 0;
-  text-transform:uppercase;
-  letter-spacing:0.07em;
-}
-.wd.weekend{color:#5a3a4a}
+    .app {
+      padding: 1rem 1rem 0.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+    }
 
-/* СЕТКА */
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(4,1fr);gap:0;flex:1;min-height:0}
+    /* ШАПКА */
+    .hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2px;
+      margin-bottom: 1rem;
+      position: relative
+    }
 
-/* ЯЧЕЙКА ДЕНЬ */
-.day{
-  min-height:0;
-  background:var(--bg);
-  border-right:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-  padding:3px 5px 2px;
-  cursor:pointer;
-  overflow:hidden;
-  position:relative;
-}
-.day:nth-child(7n){border-right:none}
-.day:hover{background:#141420}
-.day.empty{background:var(--bg);cursor:default;pointer-events:none;opacity:0.4}
-.day.weekend{background:#0c0c14}
-.day.weekend:hover{background:#111118}
+    .hdr-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
 
-/* сегодня */
-.day.today .dnum{
-  background:#5c6bc0;
-  color:#fff;
-  border-radius:50%;
-  width:24px;height:24px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;
-}
+    .nav-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--accent);
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 4px 12px;
+      line-height: 1;
+      transition: all 0.15s;
+    }
 
-/* номер дня */
-.dnum{
-  font-family:'Barlow',sans-serif;
-  font-size:12px;font-weight:500;
-  color:var(--txt2);
-  margin-bottom:2px;
-  display:inline-block;
-  line-height:1;
-  min-width:20px;
-  text-align:center;
-}
-.day.weekend .dnum{color:#5a3a4a}
+    .nav-btn:hover {
+      background: var(--border2);
+      color: #fff
+    }
 
-/* чипы упражнений — стиль Google Calendar */
-.day-chip{
-  display:block;
-  width:100%;
-  margin-bottom:2px;
-  padding:2px 6px;
-  border-radius:4px;
-  font-family:'Barlow',sans-serif;
-  font-size:13px;
-  font-weight:500;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  line-height:1.45;
-  background:#a8c8ef;
-  color:#000;
-  cursor:pointer;
-  box-sizing:border-box;
-}
-.day-chip:hover{background:#8eb8e8}
-.day-chip.done{background:#7dd4a8;color:#000}
-.day-chip.done:hover{background:#63c495}
-.day-chip.fail{background:#f0a0aa;color:#000}
-.day-chip.fail:hover{background:#e88090}
-.day-chip.main{
-  background:var(--accent);
-  color:#000;
-  font-weight:700;
-}
-.day-chip.main:hover{background:var(--accent2)}
-.day-chip.main.done{background:#00c96a;color:#000}
-.day-chip.main.done:hover{background:#00b05c}
-.day-chip.main.fail{background:#e02040;color:#000}
-.day-chip.main.fail:hover{background:#c81830}
-.day-chip.more{background:none;color:var(--txt3);font-size:12px;padding:2px 4px;font-weight:600;cursor:pointer}
-.day-chip.more:hover{color:var(--txt);background:none}
+    .month-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--txt);
+      min-width: 220px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
 
-/* ОВЕРЛЕЙ */
-.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 16px;backdrop-filter:blur(4px)}
-.mbg.open{display:flex}
-.modal{
-  background:var(--surface);
-  border-radius:18px;
-  border:1px solid var(--border2);
-  width:min(820px,96vw);
-  margin:auto;
-  overflow:hidden;
-  box-shadow:0 16px 60px rgba(0,0,0,0.7);
-}
-.modal-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 24px 14px;
-  border-bottom:1px solid var(--border);
-  background:linear-gradient(90deg,var(--surface2) 0%,var(--surface) 100%);
-  position:relative;
-}
-.modal-hdr::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2),transparent);
-}
-.modal-hdr h2{
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:20px;font-weight:800;
-  color:var(--txt);
-  text-transform:uppercase;
-  letter-spacing:0.04em;
-}
-.modal-close{
-  width:32px;height:32px;border-radius:8px;
-  border:1px solid var(--border2);
-  background:var(--surface2);
-  cursor:pointer;font-size:15px;color:var(--txt2);
-  display:flex;align-items:center;justify-content:center;
-  transition:all 0.15s;
-}
-.modal-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
-.modal-body{padding:18px 24px}
+    .editor-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 7px 36px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--txt2);
+      transition: all 0.15s;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
 
-/* ПАНЕЛЬ ВВОДА */
-.input-bar{
-  background:var(--bg);
-  border-radius:12px;padding:12px 14px;
-  margin-bottom:16px;
-  display:flex;flex-direction:column;gap:8px;
-  border:1px solid var(--border2);
-}
-.input-select{
-  flex:1;min-width:0;
-  border:1px solid var(--border2);border-radius:8px;
-  padding:8px 10px;font-size:13px;font-weight:600;
-  background:var(--surface2);color:var(--txt);outline:none;cursor:pointer;
-  font-family:'Barlow',sans-serif;
-}
-.input-select:focus{border-color:var(--accent)}
-.input-row{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
-.input-label{font-size:11px;font-weight:700;color:var(--txt3);white-space:nowrap;width:80px;flex-shrink:0;text-transform:uppercase;letter-spacing:0.04em}
-.input-num{width:80px;flex-shrink:0;border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:600;background:var(--surface2);color:var(--txt);outline:none;text-align:center;font-family:'Barlow',sans-serif}
-.input-num:focus{border-color:var(--accent)}
-.add-btn{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  border:none;border-radius:8px;padding:10px 24px;
-  cursor:pointer;font-size:13px;font-weight:800;
-  color:#fff;white-space:nowrap;
-  text-transform:uppercase;letter-spacing:0.06em;
-  transition:all 0.15s;
-  font-family:'Barlow',sans-serif;
-}
-.add-btn:hover{opacity:0.85;transform:translateY(-1px)}
+    .editor-btn:hover {
+      background: var(--border2);
+      color: var(--txt)
+    }
 
-/* ТАБЛИЦА ТРЕНИРОВКИ */
-.workout-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
-.workout-table{width:100%;border-collapse:collapse;font-family:'Barlow',sans-serif;min-width:400px}
+    /* РЕДАКТОР ДРОПДАУН */
+    .editor-drop {
+      display: none;
+      position: fixed;
+      width: 300px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      z-index: 600;
+      padding: 14px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+    }
 
-/* шапка таблицы */
-.workout-table thead tr{background:var(--bg)}
-.workout-table thead th{
-  padding:9px 14px;
-  font-size:10px;font-weight:800;
-  color:var(--txt3);
-  text-transform:uppercase;letter-spacing:0.07em;
-  border-bottom:1px solid var(--border);
-  white-space:nowrap;
-}
-.workout-table thead th.th-name{text-align:left}
-.workout-table thead th.th-num{text-align:center;width:54px}
+    .editor-drop.open {
+      display: block
+    }
 
-/* строки */
-.workout-table tbody tr{transition:background 0.12s}
-.workout-table tbody tr:hover td{background:var(--surface2)}
-.workout-table tbody tr:not(:last-child) td{border-bottom:1px solid var(--border)}
+    .editor-drop-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--txt2);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em
+    }
 
-/* ячейки */
-.workout-table tbody td{
-  padding:10px 14px;
-  background:var(--surface);
-  vertical-align:middle;
-}
+    .ex-listbox {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      max-height: 240px;
+      overflow-y: auto;
+      margin-bottom: 8px;
+      background: var(--bg)
+    }
 
-/* название упражнения */
-.td-name{
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:15px;font-weight:800;
-  color:var(--txt);
-  text-transform:uppercase;
-  letter-spacing:0.03em;
-  white-space:nowrap;
-}
-.td-name.is-main{color:var(--accent2)}
+    .ex-listbox-item {
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--txt);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s
+    }
 
-/* вес */
-.td-weight{
-  font-size:13px;font-weight:700;
-  color:var(--txt);
-  white-space:nowrap;
-  text-align:center;
-}
+    .ex-listbox-item:last-child {
+      border-bottom: none
+    }
 
-/* %1ПМ */
-.td-pct{
-  font-size:12px;font-weight:700;
-  text-align:center;
-  white-space:nowrap;
-  border-radius:6px;
-}
+    .ex-listbox-item:hover {
+      background: var(--surface2)
+    }
 
-/* ячейка подхода */
-.td-set{text-align:center;width:54px}
-.set-cell{
-  display:inline-flex;align-items:center;justify-content:center;
-  min-width:38px;height:36px;
-  border-radius:8px;
-  border:1.5px solid var(--border2);
-  background:var(--surface2);
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:16px;font-weight:700;
-  color:var(--txt2);
-  cursor:pointer;
-  transition:all 0.12s;
-  position:relative;
-}
-.set-cell:hover{border-color:var(--accent);color:var(--txt);background:#1e1a28}
-.set-cell.empty{border-style:dashed;color:var(--txt3);font-size:18px;font-weight:400}
-.set-cell.empty:hover{border-color:var(--accent);color:var(--accent)}
+    .ex-listbox-item.sel {
+      background: var(--accent);
+      color: #fff
+    }
 
-/* КОНТЕКСТНОЕ МЕНЮ */
-.ctx-menu{
-  position:fixed;z-index:1000;
-  background:var(--surface);
-  border:1px solid var(--border2);
-  border-radius:10px;
-  padding:4px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.6);
-  min-width:160px;
-  display:none;
-}
-.ctx-menu.open{display:block}
-.ctx-item{
-  padding:9px 14px;
-  font-size:13px;font-weight:600;
-  color:var(--txt);
-  border-radius:7px;
-  cursor:pointer;
-  display:flex;align-items:center;gap:8px;
-  transition:background 0.1s;
-  white-space:nowrap;
-}
-.ctx-item:hover{background:var(--surface2)}
-.ctx-item.danger{color:var(--red)}
-.ctx-item.danger:hover{background:rgba(255,59,92,0.12)}
-.ctx-sep{height:1px;background:var(--border);margin:3px 0}
+    .editor-btns {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 4px;
+      margin-bottom: 8px
+    }
 
-/* inline редактирование ячейки названия / веса */
-.td-inline-input{
-  border:none;background:transparent;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:15px;font-weight:800;
-  color:var(--accent);
-  outline:none;
-  width:100%;min-width:60px;
-  border-bottom:1.5px solid var(--accent);
-  padding:0;
-}
-.td-weight-input{
-  border:none;background:transparent;
-  font-family:'Barlow',sans-serif;
-  font-size:13px;font-weight:700;
-  color:var(--accent);
-  outline:none;
-  width:64px;text-align:center;
-  border-bottom:1.5px solid var(--accent);
-  padding:0;
-}
-.td-weight-input::-webkit-inner-spin-button,.td-weight-input::-webkit-outer-spin-button{-webkit-appearance:none}
-.set-cell-wrap{
-  display:flex;align-items:center;justify-content:center;gap:3px;
-  min-width:64px;height:36px;
-  border-radius:8px;
-  border:1.5px solid var(--border2);
-  background:var(--surface2);
-  padding:0 6px;
-  transition:border-color 0.12s;
-}
-.set-cell-wrap:focus-within{border-color:var(--accent)}
-.set-plan{
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:15px;font-weight:800;color:var(--txt2);
-  white-space:nowrap;flex-shrink:0;
-}
-.set-sep{font-size:11px;color:var(--txt3);flex-shrink:0}
-.set-fact{
-  width:32px;border:none;background:transparent;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:15px;font-weight:800;
-  color:var(--txt2);outline:none;text-align:center;padding:0;
-}
-.set-fact::-webkit-inner-spin-button,.set-fact::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-.set-fact::placeholder{color:var(--txt3);font-weight:400}
-.set-fact.fact-done{color:var(--green)}
-.set-fact.fact-fail{color:var(--red)}
+    .ed-btn {
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 7px 4px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--txt);
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.15s
+    }
 
-.ex-cards-empty{text-align:center;color:var(--txt3);padding:32px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em}
+    .ed-btn:hover {
+      background: var(--border2)
+    }
 
-.del-btn{
-  width:100%;margin-top:14px;
-  border:1px solid var(--border);border-radius:10px;
-  padding:11px;cursor:pointer;font-size:12px;font-weight:700;
-  color:var(--txt3);background:var(--bg);
-  transition:all 0.15s;text-transform:uppercase;letter-spacing:0.05em;
-}
-.del-btn.active{border-color:var(--red);color:var(--red);background:rgba(255,59,92,0.1)}
-.del-btn.active:hover{background:rgba(255,59,92,0.2)}
-.del-btn:disabled{opacity:0.3;cursor:default;pointer-events:none}
+    .editor-input-row {
+      display: flex;
+      gap: 6px
+    }
 
-/* del button under cards */
-.del-btn{width:100%;margin-top:14px;border:1px solid var(--border);border-radius:10px;padding:11px;cursor:pointer;font-size:12px;font-weight:700;color:var(--txt3);background:var(--bg);transition:all 0.15s;text-transform:uppercase;letter-spacing:0.05em}
-.del-btn.active{border-color:var(--red);color:var(--red);background:rgba(255,59,92,0.1)}
-.del-btn.active:hover{background:rgba(255,59,92,0.2)}
-.del-btn:disabled{opacity:0.3;cursor:default;pointer-events:none}
+    .editor-input {
+      flex: 1;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--txt);
+      outline: none
+    }
 
-.plan-fact-row{display:flex;align-items:center;gap:6px}
-.pf-label{font-size:11px;font-weight:700;color:var(--txt3);white-space:nowrap;width:36px;text-align:right;text-transform:uppercase;letter-spacing:0.04em}
-.pf-input{width:64px;border:1px solid var(--border2);border-radius:8px;padding:7px 6px;font-size:13px;font-weight:700;background:var(--surface2);color:var(--txt);outline:none;text-align:center;font-family:'Barlow',sans-serif}
-.pf-input:focus{border-color:var(--accent)}
-.no-arrows::-webkit-inner-spin-button,.no-arrows::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-.no-arrows{-moz-appearance:textfield}
-.input-num::-webkit-inner-spin-button,.input-num::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-.input-num{-moz-appearance:textfield}
+    .editor-input:focus {
+      border-color: var(--accent)
+    }
 
-/* ЧИПЫ РЕКОРДОВ */
-.hdr-stats{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.stat-chip{
-  display:flex;align-items:center;gap:6px;
-  background:var(--surface);
-  border:1px solid var(--border2);
-  border-radius:8px;padding:6px 12px;
-  cursor:pointer;transition:all 0.15s;
-}
-.stat-chip:hover{background:var(--surface2);border-color:var(--accent)}
-.stat-chip-label{font-size:10px;font-weight:700;color:var(--txt3);white-space:nowrap;text-transform:uppercase;letter-spacing:0.05em}
-.stat-chip-val{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap}
-.stat-chip-val.highlight{color:var(--accent2)}
+    .editor-input-ok {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700
+    }
 
-.chip-input{width:60px;border:none;border-bottom:1px solid var(--accent);background:transparent;color:var(--txt);font-size:13px;font-weight:700;outline:none;text-align:center;padding:0 2px;font-family:'Barlow',sans-serif}
+    /* СКРОЛЛ-ОБЁРТКА КАЛЕНДАРЯ */
+    .cal-scroll-wrap {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
 
-/* ДИАЛОГ ПОДТВЕРЖДЕНИЯ */
-.confirm-dlg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.confirm-dlg.open{display:flex}
-.confirm-box{
-  background:var(--surface);
-  border:1px solid var(--border2);
-  border-radius:16px;padding:24px;width:260px;text-align:center;
-  box-shadow:0 16px 40px rgba(0,0,0,0.6);
-}
-.confirm-box p{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:18px;line-height:1.5}
-.confirm-actions{display:flex;gap:8px;justify-content:center}
-.confirm-yes{background:var(--red);border:none;border-radius:8px;padding:9px 22px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;text-transform:uppercase;letter-spacing:0.04em}
-.confirm-no{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 22px;color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif}
+    .cal-inner {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column
+    }
 
-.row-del-btn{background:none;border:none;color:var(--border2);font-size:15px;cursor:pointer;padding:0 4px;line-height:1;transition:color 0.15s}
-.row-del-btn:hover{color:var(--red)}
-.pf-sep{font-size:14px;color:var(--txt3)}
+    /* ДНИ НЕДЕЛИ */
+    .wdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0;
+      border-bottom: 1px solid var(--border)
+    }
 
-/* SYNC BUTTONS */
-.sync-btn{
-  background:var(--surface2);
-  border:1px solid var(--border2);
-  border-radius:8px;
-  padding:6px 13px;
-  cursor:pointer;
-  font-size:12px;font-weight:700;
-  color:var(--txt2);
-  transition:all 0.15s;
-  letter-spacing:0.03em;
-  white-space:nowrap;flex-shrink:0;
-  font-family:'Barlow',sans-serif;
-}
-.sync-btn:hover{background:var(--border2);color:var(--txt)}
-.sync-btn.save{color:var(--green);border-color:var(--green)}
-.sync-btn.save:hover{background:rgba(0,229,122,0.12)}
-.sync-btn.load{color:var(--blue);border-color:var(--blue)}
-.sync-btn.load:hover{background:rgba(59,140,255,0.12)}
-.sync-btn:disabled{opacity:0.4;cursor:default;pointer-events:none}
-.sync-toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:var(--surface);border:1px solid var(--border2);
-  border-radius:10px;padding:10px 20px;
-  font-size:13px;font-weight:600;color:var(--txt);
-  box-shadow:0 4px 24px rgba(0,0,0,0.5);
-  z-index:9999;opacity:0;transition:opacity 0.25s;
-  pointer-events:none;white-space:nowrap;
-}
-.sync-toast.show{opacity:1}
-</style>
+    .wd {
+      text-align: center;
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--txt2);
+      padding: 6px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .wd.weekend {
+      color: #8c5c70
+    }
+
+    /* СЕТКА */
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 0;
+      flex: 1;
+      min-height: 0
+    }
+
+    /* ЯЧЕЙКА ДЕНЬ */
+    .day {
+      min-height: 0;
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 2px 3px 1px;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .day:nth-child(7n) {
+      border-right: none
+    }
+
+    .day:hover {
+      background: #141420
+    }
+
+    .day.empty {
+      background: var(--bg);
+      cursor: default;
+      pointer-events: none;
+      opacity: 0.4
+    }
+
+    .day.weekend {
+      background: #0c0c14
+    }
+
+    .day.weekend:hover {
+      background: #111118
+    }
+
+    /* чередование месяцев */
+    .day.month-a {
+      background: #0d0d12
+    }
+
+    .day.month-a.weekend {
+      background: #0a0a10
+    }
+
+    .day.month-a:hover {
+      background: #141420
+    }
+
+    .day.month-b {
+      background: #161622
+    }
+
+    .day.month-b.weekend {
+      background: #12121c
+    }
+
+    .day.month-b:hover {
+      background: #1b1b2a
+    }
+
+    /* сегодня */
+    .day.today .dnum {
+      color: var(--blue);
+    }
+
+    .day.today {
+      box-shadow: inset 0 0 0 1.5px var(--blue), 0 0 8px rgba(59, 140, 255, 0.25);
+    }
+
+    /* номер дня */
+    .dnum {
+      font-family: 'Barlow', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--txt2);
+      margin-bottom: 0px;
+      display: inline-block;
+      line-height: 1;
+      min-width: 14px;
+      text-align: center;
+    }
+
+    .day.weekend .dnum {
+      color: #5a3a4a
+    }
+
+    /* ЧИПЫ УПРАЖНЕНИЙ (Темный дизайн для видимости зелено/красных цифр) */
+    .day-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      margin-bottom: 0px;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      line-height: 1.25;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--txt);
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+    .day-chip:hover {
+      background: var(--border)
+    }
+
+    .day-chip .chip-label {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .day-chip .chip-metrics {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      gap: 0px;
+    }
+
+    .day-chip .chip-weight {
+      flex-shrink: 0;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--txt);
+      display: flex;
+      align-items: center;
+    }
+
+    .day-chip .chip-sets {
+      flex-shrink: 0;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      gap: 6px;
+      color: var(--txt2);
+      align-items: center;
+    }
+
+    .day-chip .chip-set-val {
+      display: inline-block;
+      width: 11px;
+      text-align: center;
+    }
+
+    .day-chip.main {
+      background: rgba(255, 79, 0, 0.1);
+      border-color: var(--accent);
+    }
+
+    .day-chip.main:hover {
+      background: rgba(255, 79, 0, 0.2)
+    }
+
+    .day-chip.more {
+      background: none;
+      border: none;
+      color: var(--txt3);
+      font-size: 12px;
+      padding: 2px 4px;
+      font-weight: 600;
+      cursor: pointer
+    }
+
+    .day-chip.more:hover {
+      color: var(--txt);
+      background: none
+    }
+
+    /* ОВЕРЛЕЙ */
+    .mbg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 200;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 24px 16px;
+      backdrop-filter: blur(4px)
+    }
+
+    .mbg.open {
+      display: flex
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 18px;
+      border: 1px solid var(--border2);
+      width: min(820px, 96vw);
+      margin: auto;
+      overflow: hidden;
+      box-shadow: 0 16px 60px rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, var(--surface2) 0%, var(--surface) 100%);
+      position: relative;
+    }
+
+    .modal-hdr::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
+    }
+
+    .modal-hdr h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--txt);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      cursor: pointer;
+      font-size: 15px;
+      color: var(--txt2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .modal-close:hover {
+      background: var(--red);
+      color: #fff;
+      border-color: var(--red)
+    }
+
+    .modal-body {
+      padding: 18px 24px
+    }
+
+    /* ПАНЕЛЬ ВВОДА */
+    .input-bar {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 1px solid var(--border2);
+    }
+
+    .input-select {
+      flex: 0 0 50%;
+      max-width: 50%;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--surface2);
+      color: var(--txt);
+      outline: none;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    .input-select:focus {
+      border-color: var(--accent)
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap
+    }
+
+    .input-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--txt3);
+      white-space: nowrap;
+      width: 80px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.04em
+    }
+
+    .input-num {
+      width: 80px;
+      flex-shrink: 0;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--surface2);
+      color: var(--txt);
+      outline: none;
+      text-align: center;
+      font-family: 'Barlow', sans-serif
+    }
+
+    .input-num:focus {
+      border-color: var(--accent)
+    }
+
+    .add-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: all 0.15s;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    .add-btn:hover {
+      opacity: 0.85;
+      transform: translateY(-1px)
+    }
+
+    /* ТАБЛИЦА ТРЕНИРОВКИ */
+    .workout-table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border)
+    }
+
+    .workout-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Barlow', sans-serif;
+      min-width: 400px
+    }
+
+    .workout-table thead tr {
+      background: var(--bg)
+    }
+
+    .workout-table thead th {
+      padding: 9px 14px;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--txt3);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .workout-table thead th.th-name {
+      text-align: left
+    }
+
+    .workout-table thead th.th-num {
+      text-align: center;
+      width: 54px
+    }
+
+    .workout-table tbody tr {
+      transition: background 0.12s
+    }
+
+    .workout-table tbody tr:hover td {
+      background: var(--surface2)
+    }
+
+    .workout-table tbody tr:not(:last-child) td {
+      border-bottom: 1px solid var(--border)
+    }
+
+    .workout-table tbody td {
+      padding: 10px 14px;
+      background: var(--surface);
+      vertical-align: middle;
+    }
+
+    .td-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--txt);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    .td-name.is-main {
+      color: var(--accent2)
+    }
+
+    .td-weight {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--txt);
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .td-pct {
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      white-space: nowrap;
+      border-radius: 6px;
+    }
+
+    .td-set {
+      text-align: center;
+      width: 54px
+    }
+
+    .set-cell {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 38px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border2);
+      background: var(--surface2);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--txt2);
+      cursor: pointer;
+      transition: all 0.12s;
+      position: relative;
+    }
+
+    .set-cell:hover {
+      border-color: var(--accent);
+      color: var(--txt);
+      background: #1e1a28
+    }
+
+    .set-cell.empty {
+      border-style: dashed;
+      color: var(--txt3);
+      font-size: 18px;
+      font-weight: 400
+    }
+
+    .set-cell.empty:hover {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    /* КОНТЕКСТНОЕ МЕНЮ */
+    .ctx-menu {
+      position: fixed;
+      z-index: 1000;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 4px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      min-width: 160px;
+      display: none;
+    }
+
+    .ctx-menu.open {
+      display: block
+    }
+
+    .ctx-item {
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--txt);
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.1s;
+      white-space: nowrap;
+    }
+
+    .ctx-item:hover {
+      background: var(--surface2)
+    }
+
+    .ctx-item.danger {
+      color: var(--red)
+    }
+
+    .ctx-item.danger:hover {
+      background: rgba(255, 59, 92, 0.12)
+    }
+
+    .ctx-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 3px 0
+    }
+
+    .td-weight-input {
+      border: none;
+      background: transparent;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      outline: none;
+      width: 64px;
+      text-align: center;
+      border-bottom: 1.5px solid var(--accent);
+      padding: 0;
+    }
+
+    .td-weight-input::-webkit-inner-spin-button,
+    .td-weight-input::-webkit-outer-spin-button {
+      -webkit-appearance: none
+    }
+
+    .set-cell-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-width: 64px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border2);
+      background: var(--surface2);
+      padding: 0 6px;
+      transition: border-color 0.12s;
+    }
+
+    .set-cell-wrap:focus-within {
+      border-color: var(--accent)
+    }
+
+    .set-plan {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--txt2);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .set-sep {
+      font-size: 11px;
+      color: var(--txt3);
+      flex-shrink: 0
+    }
+
+    .set-fact {
+      width: 32px;
+      border: none;
+      background: transparent;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--txt2);
+      outline: none;
+      text-align: center;
+      padding: 0;
+    }
+
+    .set-fact::-webkit-inner-spin-button,
+    .set-fact::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0
+    }
+
+    .set-fact::placeholder {
+      color: var(--txt3);
+      font-weight: 400
+    }
+
+    .set-fact.fact-done {
+      color: var(--green)
+    }
+
+    .set-fact.fact-fail {
+      color: var(--red)
+    }
+
+    .ex-cards-empty {
+      text-align: center;
+      color: var(--txt3);
+      padding: 32px;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em
+    }
+
+    .plan-fact-row {
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .pf-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--txt3);
+      white-space: nowrap;
+      width: 36px;
+      text-align: right;
+      text-transform: uppercase;
+      letter-spacing: 0.04em
+    }
+
+    .pf-input {
+      width: 64px;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 7px 6px;
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--surface2);
+      color: var(--txt);
+      outline: none;
+      text-align: center;
+      font-family: 'Barlow', sans-serif
+    }
+
+    .pf-input:focus {
+      border-color: var(--accent)
+    }
+
+    .pf-input::-webkit-inner-spin-button,
+    .pf-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0
+    }
+
+    .pf-input {
+      -moz-appearance: textfield
+    }
+
+    .no-arrows::-webkit-inner-spin-button,
+    .no-arrows::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0
+    }
+
+    .no-arrows {
+      -moz-appearance: textfield
+    }
+
+    .input-num::-webkit-inner-spin-button,
+    .input-num::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0
+    }
+
+    .input-num {
+      -moz-appearance: textfield
+    }
+
+    /* ЧИПЫ РЕКОРДОВ */
+    .hdr-stats {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: nowrap;
+      width: 100%
+    }
+
+    .stat-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex: 1;
+      min-width: 0;
+      max-width: 150px;
+    }
+
+    .stat-chip:hover {
+      background: var(--surface2);
+      border-color: var(--accent)
+    }
+
+    .stat-chip-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--txt2);
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0
+    }
+
+    .stat-chip-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--txt);
+      white-space: nowrap;
+      flex-shrink: 0
+    }
+
+    .stat-chip-val.highlight {
+      color: var(--accent2)
+    }
+
+    .chip-input {
+      width: 60px;
+      border: none;
+      border-bottom: 1px solid var(--accent);
+      background: transparent;
+      color: var(--txt);
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+      text-align: center;
+      padding: 0 2px;
+      font-family: 'Barlow', sans-serif
+    }
+
+
+    /*----------- МЕДИАЗАПРОСЫ (Все для мобильных) -----------*/
+    @media(max-width:600px) {
+      .editor-drop {
+        width: calc(100vw - 16px) !important;
+        left: 8px !important
+      }
+
+      .ex-listbox {
+        max-height: 35vh
+      }
+
+      .mbg {
+        padding: 0
+      }
+
+      .modal {
+        width: 100vw;
+        min-height: 100dvh;
+        border-radius: 0;
+        border: none;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .modal-hdr {
+        padding: 14px 8px 12px
+      }
+
+      .modal-body {
+        flex: 1;
+        overflow-y: hidden;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .workout-table-wrap {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: auto;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        padding: 10px 0;
+        order: 1;
+      }
+
+      .workout-table {
+        width: max-content;
+        min-width: 0;
+      }
+
+      .workout-table th.th-name,
+      .workout-table td.td-name {
+        padding-right: 20px;
+      }
+
+      .workout-table tbody td {
+        padding: 8px 2px;
+      }
+
+      .workout-table thead th {
+        padding: 8px 2px;
+      }
+
+      .input-bar {
+        order: 2;
+        margin-bottom: 0;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        border-top: 1px solid var(--border2);
+        padding: 10px 8px 16px;
+        background: var(--surface);
+      }
+
+      .app {
+        padding: 0.6rem 0 0;
+      }
+
+      .hdr {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        margin-bottom: 6px;
+        padding: 0 0.6rem
+      }
+
+      .month-title {
+        font-size: 20px;
+        min-width: 0
+      }
+
+      .hdr-stats {
+        padding: 0 0.6rem 0;
+        gap: 4px;
+      }
+
+      .stat-chip {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 4px;
+        border-radius: 10px;
+        gap: 2px;
+        max-width: none;
+      }
+
+      .stat-chip-label {
+        font-size: 9px;
+        letter-spacing: 0.03em;
+        text-align: center
+      }
+
+      .stat-chip-val {
+        font-size: 15px;
+        text-align: center
+      }
+
+      .cal-scroll-wrap {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .cal-scroll-wrap::-webkit-scrollbar {
+        display: none
+      }
+
+      .cal-inner {
+        width: calc(100vw / 2 * 7);
+        min-width: calc(100vw / 2 * 7);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .cal-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-template-rows: repeat(4, 136px);
+        min-height: 0;
+      }
+
+      .wdays {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr)
+      }
+
+      .wd {
+        font-size: 14px;
+        padding: 8px 0
+      }
+
+      .day {
+        padding: 2px
+      }
+
+      .dnum {
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 14px;
+        margin-bottom: 0
+      }
+
+      .day-chip {
+        font-size: 14px;
+        padding: 1px 4px;
+        margin-bottom: 0px;
+        line-height: 1.2;
+      }
+
+      .day-chip .chip-weight {
+        width: auto;
+        font-size: 16px;
+      }
+
+      .day-chip .chip-sets {
+        font-size: 16px;
+      }
+
+      .td-name {
+        font-size: 13px;
+      }
+
+      .td-weight-input {
+        width: 44px;
+      }
+
+      .set-cell-wrap {
+        min-width: 50px;
+        padding: 0 2px;
+      }
+
+      .set-fact {
+        font-size: 14px;
+        width: 24px;
+      }
+
+      .set-plan {
+        font-size: 14px;
+      }
+    }
+
+    /* loaders */
+    .cs-loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s;
+    }
+
+    .cs-loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .cs-ring {
+      width: 44px;
+      height: 44px;
+      border: 4px solid var(--border2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: cs-spin 0.8s linear infinite;
+      margin-bottom: 24px;
+    }
+
+    @keyframes cs-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .cs-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--txt);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="app">
-  <div class="hdr">
-    <div class="hdr-nav">
-      <button class="nav-btn" id="prevBtn">&#8249;</button>
-      <span class="month-title" id="monthTitle"></span>
-      <button class="nav-btn" id="nextBtn">&#8250;</button>
-      <button class="sync-btn save" id="syncSaveBtn" title="Сохранить в Telegram">&#11014; TG</button>
-      <button class="sync-btn load" id="syncLoadBtn" title="Загрузить из Telegram">&#11015; TG</button>
+  <div class="app">
+    <div class="hdr">
+      <div class="hdr-nav">
+        <button class="nav-btn" id="prevBtn">&#8249;</button>
+        <span class="month-title" id="monthTitle"></span>
+        <button class="nav-btn" id="nextBtn">&#8250;</button>
+      </div>
+      <div class="hdr-stats" id="hdrStats">
+        <div class="stat-chip" id="chipBodyweight" title="Нажми чтобы изменить">
+          <span class="stat-chip-label">Вес атлета</span>
+          <span class="stat-chip-val" id="valBodyweight">— кг</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-chip-label">Становая</span>
+          <span class="stat-chip-val highlight" id="recСтановая тяга">— кг</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-chip-label">Жим лёжа</span>
+          <span class="stat-chip-val highlight" id="recЖим лёжа">— кг</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-chip-label">Приседания</span>
+          <span class="stat-chip-val highlight" id="recПриседания">— кг</span>
+        </div>
+      </div>
     </div>
-    <div class="hdr-stats" id="hdrStats">
-      <div class="stat-chip" id="chipBodyweight" title="Нажми чтобы изменить">
-        <span class="stat-chip-label">Вес атлета</span>
-        <span class="stat-chip-val" id="valBodyweight">— кг</span>
-      </div>
-      <div class="stat-chip">
-        <span class="stat-chip-label">Становая</span>
-        <span class="stat-chip-val highlight" id="recСтановая тяга">— кг</span>
-      </div>
-      <div class="stat-chip">
-        <span class="stat-chip-label">Жим лёжа</span>
-        <span class="stat-chip-val highlight" id="recЖим лёжа">— кг</span>
-      </div>
-      <div class="stat-chip">
-        <span class="stat-chip-label">Приседания</span>
-        <span class="stat-chip-val highlight" id="recПриседания">— кг</span>
+    <div class="cal-scroll-wrap">
+      <div class="cal-inner">
+        <div class="wdays">
+          <div class="wd">Пн</div>
+          <div class="wd">Вт</div>
+          <div class="wd">Ср</div>
+          <div class="wd">Чт</div>
+          <div class="wd">Пт</div>
+          <div class="wd weekend">Сб</div>
+          <div class="wd weekend">Вс</div>
+        </div>
+        <div class="cal-grid" id="calGrid" style="border-top:1px solid var(--border)"></div>
       </div>
     </div>
   </div>
-  <div class="wdays">
-    <div class="wd">Пн</div><div class="wd">Вт</div><div class="wd">Ср</div>
-    <div class="wd">Чт</div><div class="wd">Пт</div><div class="wd weekend">Сб</div><div class="wd weekend">Вс</div>
-  </div>
-  <div class="cal-grid" id="calGrid" style="border-top:1px solid var(--border)"></div>
-</div>
 
-<!-- попап "+N more" -->
-<div id="overflowPop" style="display:none;position:fixed;z-index:500;background:#2a2a38;border-radius:16px;padding:16px 18px 14px;box-shadow:0 8px 32px rgba(0,0,0,0.7);min-width:200px;max-width:280px">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-    <div>
-      <div id="ovDow" style="font-size:11px;font-weight:700;color:#9090b0;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px"></div>
-      <div id="ovDay" style="font-size:28px;font-weight:400;color:#e8e8f4;line-height:1"></div>
+  <!-- попап "+N more" -->
+  <div id="overflowPop"
+    style="display:none;position:fixed;z-index:500;background:#2a2a38;border-radius:14px;padding:12px 14px 10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);min-width:200px;max-width:280px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <div id="ovDay" style="font-size:22px;font-weight:700;color:#e8e8f4;line-height:1"></div>
+        <div id="ovDow"
+          style="font-size:13px;font-weight:700;color:#9090b0;text-transform:uppercase;letter-spacing:0.05em;"></div>
+      </div>
+      <button id="ovClose"
+        style="background:none;border:none;color:#9090b0;font-size:20px;cursor:pointer;padding:0;line-height:1;margin-top:-2px">&times;</button>
     </div>
-    <button id="ovClose" style="background:none;border:none;color:#9090b0;font-size:18px;cursor:pointer;padding:4px 6px;border-radius:6px;line-height:1">&times;</button>
+    <div id="ovList"></div>
   </div>
-  <div id="ovList"></div>
-</div>
 
-<div class="mbg" id="mbg">
-  <div class="modal">
-    <div class="modal-hdr">
-      <h2 id="modalTitle"></h2>
-      <button class="modal-close" id="modalClose">&#x2715;</button>
-    </div>
-    <div class="modal-body">
-      <div class="input-bar">
-        <div style="display:flex;gap:8px;align-items:center;position:relative">
-          <select class="input-select" id="exSelect" style="flex:1;margin:0"></select>
-          <button class="editor-btn" id="editorBtn" style="white-space:nowrap;flex-shrink:0">&#9998; Список</button>
-          <div class="editor-drop" id="editorDrop">
-            <div class="editor-drop-title">Упражнения</div>
-            <div class="ex-listbox" id="exListbox"></div>
-            <div class="editor-btns">
-              <button class="ed-btn" id="btnAdd">Добавить</button>
-              <button class="ed-btn" id="btnEdit" disabled>Изменить</button>
-              <button class="ed-btn" id="btnDel" disabled>Удалить</button>
-              <button class="ed-btn" id="btnClose">Закрыть</button>
-            </div>
-            <div id="edInputRow" style="display:none" class="editor-input-row">
-              <input class="editor-input" id="edInput" maxlength="40" placeholder="Название..."/>
-              <button class="editor-input-ok" id="edOk">OK</button>
+  <div class="mbg" id="mbg">
+    <div class="modal">
+      <div class="modal-hdr">
+        <h2 id="modalTitle"></h2>
+        <button class="modal-close" id="modalClose">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-bar">
+          <div style="display:flex;gap:8px;align-items:center;position:relative">
+            <select class="input-select" id="exSelect" style="flex:1;margin:0"></select>
+            <span class="pf-label"
+              style="width:auto;color:var(--accent2);font-size:11px;font-weight:700;flex-shrink:0;margin-left:auto">1ПМ</span>
+            <input class="input-num no-arrows" id="inORM" type="number" min="0" max="9999" step="0.5" placeholder="кг"
+              style="color:var(--accent2);flex-shrink:0">
+            <div class="editor-drop" id="editorDrop">
+              <div class="editor-drop-title">Упражнения</div>
+              <div class="ex-listbox" id="exListbox"></div>
+              <div class="editor-btns">
+                <button class="ed-btn" id="btnAdd">Добавить упражнение</button>
+              </div>
+              <div id="edInputRow" style="display:none" class="editor-input-row">
+                <input class="editor-input" id="edInput" maxlength="40" placeholder="Название..." />
+                <button class="editor-input-ok" id="edOk">OK</button>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="input-row">
-          <span class="input-label">Вес (кг)</span>
-          <input class="input-num" id="inWt" type="number" min="0" max="9999" step="0.5" placeholder="0">
-          <span class="pf-label" style="width:auto;color:var(--accent2);font-size:11px;font-weight:700">1ПМ</span>
-          <input class="pf-input no-arrows" id="inORM" type="number" min="0" max="9999" step="0.5" placeholder="кг" style="color:var(--accent2)">
-        </div>
-        <div class="input-row">
-          <span class="input-label">Повторения</span>
-          <div class="plan-fact-row">
-            <span class="pf-label">план</span>
-            <input class="pf-input" id="inPlan" type="number" min="1" max="9999" placeholder="12">
+          <div class="input-row">
+            <span class="input-label">Вес (кг)</span>
+            <input class="input-num" id="inWt" type="number" min="0" max="9999" step="0.5" placeholder="0">
           </div>
-          <button class="add-btn" id="addSetBtn">Добавить</button>
+          <div class="input-row">
+            <span class="input-label">Повторения</span>
+            <input class="input-num" id="inPlan" type="number" min="1" max="9999" placeholder="12">
+            <button class="add-btn" id="addSetBtn">Добавить</button>
+          </div>
         </div>
+        <div class="workout-table-wrap" id="workoutTableWrap"></div>
       </div>
-      <div class="workout-table-wrap" id="workoutTableWrap"></div>
     </div>
   </div>
-</div>
 
-<div class="confirm-dlg" id="confirmDlg">
-  <div class="confirm-box">
-    <p>Удалить этот подход?</p>
-    <div class="confirm-actions">
-      <button class="confirm-no" id="confirmNo">Отмена</button>
-      <button class="confirm-yes" id="confirmYes">Удалить</button>
-    </div>
+  <div class="ctx-menu" id="ctxMenu">
+    <div class="ctx-item" id="ctxDelSet" style="display:none">🗑 Удалить подход</div>
+    <div class="ctx-sep" id="ctxSep" style="display:none"></div>
+    <div class="ctx-item danger" id="ctxDelEx">✕ Удалить упражнение</div>
   </div>
-</div>
 
-<div class="ctx-menu" id="ctxMenu">
-  <div class="ctx-item" id="ctxDelSet" style="display:none">🗑 Удалить подход</div>
-  <div class="ctx-sep" id="ctxSep" style="display:none"></div>
-  <div class="ctx-item danger" id="ctxDelEx">✕ Удалить упражнение</div>
-</div>
+  <div id="csLoader" class="cs-loader">
+    <div class="cs-ring"></div>
+    <div class="cs-text">СИНХРОНИЗАЦИЯ...</div>
+  </div>
 
-<script>
-const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const PINNED=['Приседания','Жим лёжа','Становая тяга'];
-const REST=['Подтягивания','Жим стоя','Тяга штанги','Отжимания','Жим гантелей','Планка','Скручивания'];
-let exercises=[...PINNED,...REST];
-let sets=[];let nextId=1;
-let bodyweight=null;
-let records={};// {упражнение: 1пм_кг}
-try{const s=localStorage.getItem('gd_sets2');if(s){const d=JSON.parse(s);sets=d.sets||[];nextId=d.nextId||1;}}catch(e){}
-try{const s=localStorage.getItem('gd_ex2');if(s)exercises=JSON.parse(s);}catch(e){}
-try{const s=localStorage.getItem('gd_bw');if(s)bodyweight=parseFloat(s);}catch(e){}
-try{const s=localStorage.getItem('gd_rec');if(s)records=JSON.parse(s);}catch(e){}
-function persist(){try{localStorage.setItem('gd_sets2',JSON.stringify({sets,nextId}));localStorage.setItem('gd_ex2',JSON.stringify(exercises));if(bodyweight!=null)localStorage.setItem('gd_bw',bodyweight);localStorage.setItem('gd_rec',JSON.stringify(records));}catch(e){}}
+  <script>
+    const TM = window.Telegram?.WebApp;
+    const isTg = !!TM?.initData;
+    if (isTg) { TM.expand(); TM.ready(); }
+    const MONTHS = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    const PINNED = ['Приседания', 'Жим лёжа', 'Становая тяга'];
+    const REST = ['Подтягивания', 'Жим стоя', 'Тяга штанги', 'Отжимания', 'Жим гантелей', 'Планка', 'Скручивания'];
 
-function limitNum(el){if(!el)return;el.addEventListener('input',()=>{let v=el.value.replace(/[^0-9.]/g,'');const p=v.split('.');if(p[0].length>4)p[0]=p[0].slice(0,4);v=p.length>1?p[0]+'.'+p[1].slice(0,1):p[0];if(el.value!==v)el.value=v;});}
-limitNum(document.getElementById('inPlan'));
-limitNum(document.getElementById('inWt'));
-limitNum(document.getElementById('inORM'));
+    let exercises = [...PINNED, ...REST];
+    let setsByDate = {};
+    let nextId = 1;
+    let bodyweight = null;
+    let records = {};
+    let pendingCloudSaves = new Set();
+    let dirtyDates = new Set();
+    let persistTimer = null;
 
-const REC_EX=['Становая тяга','Жим лёжа','Приседания'];
-function renderHdrStats(){
-  document.getElementById('valBodyweight').textContent=bodyweight!=null?`${bodyweight} кг`:'— кг';
-  REC_EX.forEach(ex=>{
-    const el=document.getElementById('rec'+ex);
-    if(el)el.textContent=records[ex]!=null?`${records[ex]} кг`:'— кг';
-  });
-}
-renderHdrStats();
-
-// редактирование веса атлета по клику на чип
-document.getElementById('chipBodyweight').addEventListener('click',()=>{
-  const chip=document.getElementById('chipBodyweight');
-  const valEl=document.getElementById('valBodyweight');
-  const inp=document.createElement('input');
-  inp.className='chip-input';inp.type='number';inp.min=0;inp.max=999;inp.step=0.1;
-  inp.value=bodyweight||'';inp.placeholder='кг';
-  valEl.replaceWith(inp);inp.focus();inp.select();
-  function save(){
-    const v=parseFloat(inp.value);
-    bodyweight=isNaN(v)?null:v;
-    persist();
-    const newEl=document.createElement('span');
-    newEl.id='valBodyweight';newEl.className='stat-chip-val';
-    newEl.textContent=bodyweight!=null?`${bodyweight} кг`:'— кг';
-    inp.replaceWith(newEl);
-  }
-  inp.addEventListener('blur',save);
-  inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value='';inp.blur();}});
-});
-
-const now=new Date();
-const todayStr=now.toISOString().slice(0,10);
-
-// Anchor = понедельник текущей недели (начало блока из 5 недель)
-function getMondayOf(date){
-  const d=new Date(date);
-  const dow=d.getDay(); // 0=вс
-  const diff=(dow===0)?-6:1-dow;
-  d.setDate(d.getDate()+diff);
-  return d;
-}
-// anchorMonday — первый Пн отображаемого блока
-let anchorMonday=getMondayOf(now);
-// Смещаем так, чтобы сегодня попадал примерно во 2-ю неделю из 4
-anchorMonday.setDate(anchorMonday.getDate()-7);
-
-function dkey(y,m,d){return`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
-function dateToKey(d){return dkey(d.getFullYear(),d.getMonth(),d.getDate());}
-function sortedExercises(){const p=exercises.filter(e=>PINNED.includes(e)).sort((a,b)=>PINNED.indexOf(a)-PINNED.indexOf(b));const r=exercises.filter(e=>!PINNED.includes(e)).sort();return[...p,...r];}
-
-const MONTHS_SHORT=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-
-function getWorkoutsForRange(startDate, endDate){
-  const byDate={};
-  // собираем все подходы в диапазоне
-  const s0=dateToKey(startDate), s1=dateToKey(endDate);
-  const rangeSets=sets.filter(s=>s.date>=s0&&s.date<=s1);
-
-  const exByDate={};
-  rangeSets.forEach(s=>{
-    const key=s.date+'|'+s.exercise;
-    if(!exByDate[key])exByDate[key]=[];
-    exByDate[key].push(s);
-  });
-
-  const ordered=rangeSets.filter(s=>s.set_number===1).map(s=>s.date+'|'+s.exercise);
-  const seen=new Set();
-  ordered.forEach(k=>{
-    if(seen.has(k)||!exByDate[k])return;
-    seen.add(k);
-    const exSets=exByDate[k];
-    const date=exSets[0].date;
-    const ex=exSets[0].exercise;
-    const maxWt=Math.max(...exSets.map(s=>parseFloat(s.weight)||0));
-    const working=exSets.filter(s=>(parseFloat(s.weight)||0)===maxWt);
-    if(!byDate[date])byDate[date]=[];
-    const wtPart=maxWt>0?` ${maxWt}кг`:'';
-    const sortedSets=[...exSets].sort((a,b)=>a.set_number-b.set_number);
-    const firstSet=sortedSets[0];
-    const allDone=firstSet&&firstSet.fact!=null&&firstSet.plan!=null&&firstSet.fact>=firstSet.plan;
-    const anyFail=firstSet&&firstSet.fact!=null&&firstSet.plan!=null&&firstSet.fact<firstSet.plan;
-    const setsNums=sortedSets.map(s=>{
-      if(s.fact!=null) return String(s.fact);
-      if(s.plan!=null) return String(s.plan);
-      return '—';
-    }).join('  ');
-    byDate[date].push({label:`${ex}${wtPart}`,sets:setsNums,isDone:allDone,isFail:anyFail,raw:false});
-  });
-  return byDate;
-}
-
-const WEEKS=4; // количество недель в блоке
-const DAYS_RU=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-
-function renderCalendar(){
-  // диапазон: anchorMonday + 5 недель
-  const startDate=new Date(anchorMonday);
-  const endDate=new Date(anchorMonday);
-  endDate.setDate(endDate.getDate()+WEEKS*7-1);
-
-  // заголовок: диапазон месяцев
-  const sm=startDate.getMonth(), em=endDate.getMonth();
-  const sy=startDate.getFullYear(), ey=endDate.getFullYear();
-  let title;
-  if(sy===ey&&sm===em) title=`${MONTHS[sm]} ${sy}`;
-  else if(sy===ey) title=`${MONTHS[sm]} — ${MONTHS[em]} ${sy}`;
-  else title=`${MONTHS[sm]} ${sy} — ${MONTHS[em]} ${ey}`;
-  document.getElementById('monthTitle').textContent=title;
-
-  const g=document.getElementById('calGrid');g.innerHTML='';
-  const workouts=getWorkoutsForRange(startDate,endDate);
-
-  // рендерим строго WEEKS*7 ячеек
-  for(let i=0;i<WEEKS*7;i++){
-    const cur=new Date(startDate);
-    cur.setDate(startDate.getDate()+i);
-    const k=dateToKey(cur);
-    const d=cur.getDate();
-    const m=cur.getMonth();
-    const dow=cur.getDay();
-    const isWeekend=dow===0||dow===6;
-    const isFirstOfMonth=d===1;
-
-    const el=document.createElement('div');
-    const cls=['day'];
-    if(k===todayStr) cls.push('today');
-    if(isWeekend) cls.push('weekend');
-    el.className=cls.join(' ');
-
-    // номер дня — если 1-е число, добавляем название месяца
-    const dnum=document.createElement('span');
-    dnum.className='dnum';
-    if(isFirstOfMonth){
-      dnum.innerHTML=`<span style="font-size:10px;color:var(--accent2);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;display:block;line-height:1.2">${MONTHS_SHORT[m]}</span>${d}`;
-    } else {
-      dnum.textContent=d;
-    }
-    el.appendChild(dnum);
-
-    // чипы
-    const exList=workouts[k]||[];
-    const MAX=4;
-    const total=exList.length;
-    exList.slice(0,MAX).forEach((item,idx)=>{
-      const chip=document.createElement('span');
-      let chipClass='day-chip';
-      if(idx===0) chipClass+=' main';
-      if(item.isDone) chipClass+=' done';
-      else if(item.isFail) chipClass+=' fail';
-      chip.className=chipClass;
-      chip.innerHTML=`<span style="font-weight:700">${item.label}</span><span style="margin-left:5px;font-weight:700">${item.sets}</span>`;
-      chip.addEventListener('click',e=>{e.stopPropagation();openDay(k);});
-      el.appendChild(chip);
-    });
-
-    if(total>MAX){
-      const more=document.createElement('span');
-      more.className='day-chip more';
-      more.textContent=`${total-MAX} more`;
-      more.addEventListener('click',e=>{
-        e.stopPropagation();
-        showOverflowPop(k,d,dow,exList,more);
-      });
-      el.appendChild(more);
-    }
-
-    el.addEventListener('click',()=>openDay(k));
-    g.appendChild(el);
-  }
-}
-
-// попап "+N more"
-function showOverflowPop(dateKey,d,dow,exList,anchor){
-  const pop=document.getElementById('overflowPop');
-  document.getElementById('ovDow').textContent=DAYS_RU[dow];
-  document.getElementById('ovDay').textContent=d;
-  const list=document.getElementById('ovList');
-  list.innerHTML='';
-  exList.forEach((item,idx)=>{
-    const chip=document.createElement('div');
-    let chipClass='day-chip';
-    if(idx===0) chipClass+=' main';
-    if(item.isDone) chipClass+=' done';
-    else if(item.isFail) chipClass+=' fail';
-    chip.className=chipClass;
-    chip.style.marginBottom='4px';
-    chip.innerHTML=`<span style="font-weight:700">${item.label}</span><span style="margin-left:5px;font-weight:700">${item.sets}</span>`;
-    chip.addEventListener('click',()=>{closeOverflowPop();openDay(dateKey);});
-    list.appendChild(chip);
-  });
-
-  // позиция рядом с anchor
-  const rect=anchor.getBoundingClientRect();
-  pop.style.display='block';
-  const pw=pop.offsetWidth||220;
-  const ph=pop.offsetHeight||200;
-  let left=rect.left;
-  let top=rect.bottom+4;
-  if(left+pw>window.innerWidth-12) left=window.innerWidth-pw-12;
-  if(top+ph>window.innerHeight-12) top=rect.top-ph-4;
-  pop.style.left=left+'px';
-  pop.style.top=top+'px';
-}
-
-function closeOverflowPop(){
-  document.getElementById('overflowPop').style.display='none';
-}
-
-document.getElementById('ovClose').addEventListener('click',closeOverflowPop);
-document.addEventListener('click',e=>{
-  const pop=document.getElementById('overflowPop');
-  if(pop.style.display!=='none'&&!pop.contains(e.target)) closeOverflowPop();
-});
-
-let curDate=null,selRowId=null;
-function openDay(dateStr){
-  curDate=dateStr;selRowId=null;
-  const[y,mo,d]=dateStr.split('-');
-  document.getElementById('modalTitle').textContent=`Тренировка: ${d} ${MONTHS[parseInt(mo)-1]} ${y}`;
-  document.getElementById('inPlan').value='';
-  document.getElementById('inWt').value='';
-  buildExSelect();syncORM();loadDayData();
-  document.getElementById('mbg').classList.add('open');
-}
-
-function buildExSelect(){
-  const sel=document.getElementById('exSelect');const cur=sel.value;sel.innerHTML='';
-  sortedExercises().forEach(ex=>{const o=document.createElement('option');o.value=ex;o.textContent=ex;sel.appendChild(o);});
-  if(cur&&exercises.includes(cur))sel.value=cur;
-  syncORM();
-}
-
-function syncORM(){
-  const ex=document.getElementById('exSelect').value;
-  const ormIn=document.getElementById('inORM');
-  ormIn.value=records[ex]!=null?records[ex]:'';
-}
-
-document.getElementById('exSelect').addEventListener('change',syncORM);
-
-let ormTimer=null;
-document.getElementById('inORM').addEventListener('input',()=>{
-  clearTimeout(ormTimer);
-  ormTimer=setTimeout(()=>{
-    const ex=document.getElementById('exSelect').value;
-    const v=parseFloat(document.getElementById('inORM').value);
-    if(!isNaN(v)&&v>0)records[ex]=v;else delete records[ex];
-    persist();renderHdrStats();loadDayData();
-  },500);
-});
-
-function loadDayData(){
-  const daySet=sets.filter(s=>s.date===curDate);
-  const exOrder=[];const seen=new Set();
-  [...daySet].sort((a,b)=>a.id-b.id).forEach(s=>{if(!seen.has(s.exercise)){seen.add(s.exercise);exOrder.push(s.exercise);}});
-  const wrap=document.getElementById('workoutTableWrap');wrap.innerHTML='';
-
-  if(!daySet.length){
-    wrap.innerHTML='<div class="ex-cards-empty">Нет подходов — добавь первый</div>';
-    renderHdrStats();return;
-  }
-
-  const maxSets=exOrder.reduce((m,ex)=>{
-    const cnt=daySet.filter(s=>s.exercise===ex).length;
-    return cnt>m?cnt:m;
-  },0);
-
-  const table=document.createElement('table');
-  table.className='workout-table';
-
-  // thead
-  const thead=document.createElement('thead');
-  let thHTML='<tr><th class="th-name">Упражнение</th><th class="th-num">%1ПМ</th><th class="th-num">Вес кг</th>';
-  for(let i=1;i<=maxSets;i++) thHTML+=`<th class="th-num">${i} пдх</th>`;
-  thHTML+='</tr>';
-  thead.innerHTML=thHTML;
-  table.appendChild(thead);
-
-  const tbody=document.createElement('tbody');
-
-  exOrder.forEach((ex,exIdx)=>{
-    const isMain=exIdx===0;
-    const exSets=daySet.filter(s=>s.exercise===ex).sort((a,b)=>a.set_number-b.set_number);
-    const maxWt=Math.max(...exSets.map(s=>parseFloat(s.weight)||0));
-    const weight=maxWt>0?maxWt:null;
-    const pctRatio=records[ex]!=null&&weight!=null?weight/records[ex]:null;
-    const pct=pctRatio!=null?Math.round(pctRatio*100)+'%':'—';
-    const pctColor=pctRatio!=null?(pctRatio>=0.8?'var(--red)':pctRatio>=0.6?'var(--yellow)':'var(--green)'):'var(--txt3)';
-
-    const tr=document.createElement('tr');
-
-    // — название: клик = inline edit, правый клик = контекстное меню строки
-    const tdName=document.createElement('td');
-    tdName.className='td-name'+(isMain?' is-main':'');
-    tdName.textContent=ex;
-    tdName.style.cursor='default';
-    tdName.addEventListener('contextmenu',e=>{
-      e.preventDefault();
-      showCtxMenu(e,{ex,setId:null});
-    });
-    tr.appendChild(tdName);
-
-    // — %1ПМ
-    const tdPct=document.createElement('td');
-    tdPct.className='td-pct';tdPct.style.color=pctColor;tdPct.textContent=pct;
-    tr.appendChild(tdPct);
-
-    // — вес: клик = inline edit
-    const tdWt=document.createElement('td');
-    tdWt.className='td-weight';
-    tdWt.textContent=weight!=null?weight+' кг':'—';
-    tdWt.style.cursor='pointer';
-    tdWt.addEventListener('click',e=>{
-      e.stopPropagation();
-      if(tdWt.querySelector('input'))return;
-      const inp=document.createElement('input');
-      inp.className='td-weight-input';inp.type='number';inp.min=0;inp.max=9999;inp.step=0.5;
-      inp.value=weight!=null?weight:'';inp.placeholder='кг';
-      tdWt.textContent='';tdWt.appendChild(inp);
-      inp.focus();inp.select();
-      function saveWt(){
-        const v=parseFloat(inp.value);
-        const newWt=isNaN(v)?null:v;
-        sets.filter(s=>s.date===curDate&&s.exercise===ex).forEach(s=>s.weight=newWt);
-        persist();loadDayData();renderCalendar();
-      }
-      inp.addEventListener('blur',saveWt);
-      inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){saveWt();}e.stopPropagation();});
-      inp.addEventListener('click',e=>e.stopPropagation());
-    });
-    tr.appendChild(tdWt);
-
-    // — подходы
-    for(let i=0;i<maxSets;i++){
-      const td=document.createElement('td');td.className='td-set';
-      const s=exSets[i]||null;
-
-      if(!s){
-        const cell=document.createElement('div');
-        cell.className='set-cell empty';cell.textContent='+';cell.title='Добавить подход';
-        cell.addEventListener('click',()=>{
-          const lastSet=exSets[exSets.length-1];
-          sets.push({id:nextId++,date:curDate,exercise:ex,set_number:exSets.length+1,plan:lastSet?lastSet.plan:null,fact:null,weight:lastSet?lastSet.weight:null});
-          persist();loadDayData();renderCalendar();
+    try {
+      const old = localStorage.getItem('gd_sets2');
+      if (old) {
+        const d = JSON.parse(old);
+        const sbd = d.setsByDate || {};
+        if (Array.isArray(d.sets)) {
+          d.sets.forEach(s => {
+            if (!sbd[s.date]) sbd[s.date] = [];
+            sbd[s.date].push(s);
+          });
+        }
+        Object.keys(sbd).forEach(k => {
+          localStorage.setItem('gd_d_' + k, JSON.stringify(sbd[k]));
         });
-        td.appendChild(cell);
-      } else {
-        const cellWrap=document.createElement('div');
-        cellWrap.className='set-cell-wrap';
-        cellWrap.title='ПКМ — удалить подход';
+        localStorage.setItem('gd_meta', JSON.stringify({ nextId: d.nextId || 1 }));
+        localStorage.removeItem('gd_sets2');
+      }
+    } catch (e) { }
 
-        // план — кликабельный для редактирования
-        const planEl=document.createElement('span');
-        planEl.className='set-plan';planEl.textContent=s.plan!=null?s.plan:'—';
-        planEl.style.cursor='pointer';
-        planEl.addEventListener('click',e=>{
-          e.stopPropagation();
-          if(planEl.querySelector('input'))return;
-          const inp=document.createElement('input');
-          inp.type='number';inp.min=0;inp.max=999;
-          inp.style.cssText='width:28px;border:none;background:transparent;font-family:"Barlow Condensed",sans-serif;font-size:14px;font-weight:700;color:var(--accent);outline:none;text-align:center;padding:0;border-bottom:1px solid var(--accent)';
-          inp.value=s.plan!=null?s.plan:'';inp.placeholder='—';
-          planEl.textContent='';planEl.appendChild(inp);
-          inp.focus();inp.select();
-          function savePlan(){
-            const v=inp.value.trim();
-            s.plan=v!==''?parseInt(v):null;
-            planEl.textContent=s.plan!=null?s.plan:'—';
-            persist();renderCalendar();
+    function initLocalData() {
+      setsByDate = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('gd_d_')) {
+          try { setsByDate[k.replace('gd_d_', '')] = JSON.parse(localStorage.getItem(k)); } catch (e) { }
+        }
+      }
+      try { const s = localStorage.getItem('gd_meta'); if (s) nextId = JSON.parse(s).nextId || 1; } catch (e) { }
+      try { const s = localStorage.getItem('gd_ex2'); if (s) exercises = JSON.parse(s); } catch (e) { }
+      try { const s = localStorage.getItem('gd_bw'); if (s) bodyweight = parseFloat(s); } catch (e) { }
+      try { const s = localStorage.getItem('gd_rec'); if (s) records = JSON.parse(s); } catch (e) { }
+    }
+    initLocalData();
+
+    function persistImmediately() {
+      try {
+        localStorage.setItem('gd_meta', JSON.stringify({ nextId }));
+        pendingCloudSaves.add('gd_meta');
+
+        localStorage.setItem('gd_ex2', JSON.stringify(exercises));
+        pendingCloudSaves.add('gd_ex2');
+
+        if (bodyweight != null) {
+          localStorage.setItem('gd_bw', String(bodyweight));
+          pendingCloudSaves.add('gd_bw');
+        }
+
+        localStorage.setItem('gd_rec', JSON.stringify(records));
+        pendingCloudSaves.add('gd_rec');
+
+        dirtyDates.forEach(date => {
+          if (setsByDate[date] && setsByDate[date].length > 0) {
+            localStorage.setItem('gd_d_' + date, JSON.stringify(setsByDate[date]));
+            pendingCloudSaves.add('gd_d_' + date);
+          } else {
+            localStorage.removeItem('gd_d_' + date);
+            pendingCloudSaves.add('DEL:gd_d_' + date);
           }
-          inp.addEventListener('blur',savePlan);
-          inp.addEventListener('keydown',e2=>{if(e2.key==='Enter')inp.blur();if(e2.key==='Escape'){planEl.textContent=s.plan!=null?s.plan:'—';}e2.stopPropagation();});
-          inp.addEventListener('click',e2=>e2.stopPropagation());
         });
-
-        const sep=document.createElement('span');sep.className='set-sep';sep.textContent='→';
-
-        const factEl=document.createElement('input');
-        const initDone=s.fact!=null&&s.plan!=null&&s.fact>=s.plan;
-        const initFail=s.fact!=null&&s.plan!=null&&s.fact<s.plan;
-        factEl.className='set-fact'+(initDone?' fact-done':initFail?' fact-fail':'');
-        factEl.type='number';factEl.min='';factEl.max=999;
-        factEl.value=s.fact!=null?s.fact:'';factEl.placeholder='—';
-        let factTimer=null;
-        factEl.addEventListener('input',()=>{
-          clearTimeout(factTimer);
-          factTimer=setTimeout(()=>{
-            const v=factEl.value;
-            s.fact=v!==''?parseInt(v):null;
-            const hasFact=s.fact!=null;
-            const done=hasFact&&s.plan!=null&&s.fact>=s.plan;
-            const fail=hasFact&&s.plan!=null&&s.fact<s.plan;
-            factEl.className='set-fact'+(done?' fact-done':fail?' fact-fail':'');
-            persist();renderCalendar();
-          },400);
-        });
-        factEl.addEventListener('keydown',e=>{if(e.key==='Enter')factEl.blur();e.stopPropagation();});
-        factEl.addEventListener('click',e=>e.stopPropagation());
-
-        // правый клик на ячейке = удалить подход
-        cellWrap.addEventListener('contextmenu',e=>{
-          e.preventDefault();
-          showCtxMenu(e,{ex,setId:s.id});
-        });
-
-        cellWrap.appendChild(planEl);cellWrap.appendChild(sep);cellWrap.appendChild(factEl);
-        td.appendChild(cellWrap);
-      }
-      tr.appendChild(td);
+        dirtyDates.clear();
+        syncDirtyKeysToCloud();
+      } catch (e) { }
     }
 
-    tbody.appendChild(tr);
-  });
-
-  table.appendChild(tbody);
-  wrap.appendChild(table);
-  renderHdrStats();
-}
-
-let pendingDeleteId=null;
-document.getElementById('confirmYes').addEventListener('click',()=>{
-  if(pendingDeleteId==null)return;
-  sets=sets.filter(s=>s.id!==pendingDeleteId);
-  const exNames=[...new Set(sets.filter(s=>s.date===curDate).map(s=>s.exercise))];
-  exNames.forEach(name=>{sets.filter(s=>s.date===curDate&&s.exercise===name).sort((a,b)=>a.set_number-b.set_number).forEach((s,i)=>s.set_number=i+1);});
-  pendingDeleteId=null;persist();loadDayData();renderCalendar();
-  document.getElementById('confirmDlg').classList.remove('open');
-});
-document.getElementById('confirmNo').addEventListener('click',()=>{pendingDeleteId=null;document.getElementById('confirmDlg').classList.remove('open');});
-
-document.getElementById('addSetBtn').addEventListener('click',()=>{
-  const ex=document.getElementById('exSelect').value;
-  const plan=parseInt(document.getElementById('inPlan').value)||null;
-  const wt=parseFloat(document.getElementById('inWt').value);const weight=isNaN(wt)?null:wt;
-  if(!ex||(plan===null&&weight===null))return;
-  const exSets=sets.filter(s=>s.date===curDate&&s.exercise===ex);
-  const setNum=exSets.length?Math.max(...exSets.map(s=>s.set_number))+1:1;
-  sets.push({id:nextId++,date:curDate,exercise:ex,set_number:setNum,plan,fact:null,weight});
-  document.getElementById('inPlan').value='';
-  document.getElementById('inWt').value='';
-  persist();loadDayData();renderCalendar();
-});
-['inPlan','inWt'].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('addSetBtn').click();});
-});
-
-document.getElementById('modalClose').addEventListener('click',()=>document.getElementById('mbg').classList.remove('open'));
-document.getElementById('mbg').addEventListener('click',e=>{if(e.target===document.getElementById('mbg'))document.getElementById('mbg').classList.remove('open');});
-
-let selEx=null,edMode=null;
-function renderExListbox(){
-  const box=document.getElementById('exListbox');box.innerHTML='';selEx=null;
-  document.getElementById('btnEdit').disabled=true;document.getElementById('btnDel').disabled=true;
-  document.getElementById('btnEdit').className='ed-btn';document.getElementById('btnDel').className='ed-btn';
-  sortedExercises().forEach(ex=>{
-    const div=document.createElement('div');div.className='ex-listbox-item';div.textContent=ex;
-    div.addEventListener('click',()=>{
-      selEx=ex;document.querySelectorAll('.ex-listbox-item').forEach(d=>d.classList.remove('sel'));div.classList.add('sel');
-      document.getElementById('btnEdit').disabled=false;document.getElementById('btnDel').disabled=false;
-      document.getElementById('btnEdit').className='ed-btn blue';document.getElementById('btnDel').className='ed-btn red';
-    });
-    box.appendChild(div);
-  });
-}
-document.getElementById('editorBtn').addEventListener('click',e=>{
-  e.stopPropagation();
-  const d=document.getElementById('editorDrop');
-  const isOpen=d.classList.contains('open');
-  d.classList.remove('open');
-  if(!isOpen){
-    const btn=e.currentTarget.getBoundingClientRect();
-    const dropW=300;
-    const dropH=260; // примерная высота
-    // позиция: под кнопкой, прижато вправо
-    let left=btn.right-dropW;
-    let top=btn.bottom+6;
-    // если не влезает снизу — открываем вверх
-    if(top+dropH>window.innerHeight-20) top=btn.top-dropH-6;
-    if(left<8) left=8;
-    d.style.left=left+'px';
-    d.style.top=top+'px';
-    d.classList.add('open');
-    renderExListbox();
-  }
-});
-document.addEventListener('click',e=>{
-  const drop=document.getElementById('editorDrop');
-  const btn=document.getElementById('editorBtn');
-  if(drop&&!drop.contains(e.target)&&e.target!==btn)drop.classList.remove('open');
-});
-document.getElementById('btnClose').addEventListener('click',()=>document.getElementById('editorDrop').classList.remove('open'));
-document.getElementById('btnAdd').addEventListener('click',()=>{edMode='add';document.getElementById('edInputRow').style.display='flex';document.getElementById('edInput').value='';document.getElementById('edInput').focus();});
-document.getElementById('btnEdit').addEventListener('click',()=>{if(!selEx)return;edMode='edit';document.getElementById('edInputRow').style.display='flex';document.getElementById('edInput').value=selEx;document.getElementById('edInput').focus();});
-document.getElementById('edOk').addEventListener('click',()=>{
-  const v=document.getElementById('edInput').value.trim();if(!v)return;
-  if(edMode==='add'){if(!exercises.includes(v)){exercises.push(v);persist();renderExListbox();}}
-  else if(edMode==='edit'&&selEx){const i=exercises.indexOf(selEx);if(i>=0){exercises[i]=v;sets.forEach(s=>{if(s.exercise===selEx)s.exercise=v;});persist();renderExListbox();renderCalendar();}}
-  document.getElementById('edInputRow').style.display='none';edMode=null;
-});
-document.getElementById('edInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('edOk').click();});
-document.getElementById('btnDel').addEventListener('click',()=>{if(!selEx)return;exercises=exercises.filter(x=>x!==selEx);persist();renderExListbox();});
-// — контекстное меню
-let ctxTarget={ex:null,setId:null};
-function showCtxMenu(e,target){
-  ctxTarget=target;
-  const menu=document.getElementById('ctxMenu');
-  const delSet=document.getElementById('ctxDelSet');
-  const sep=document.getElementById('ctxSep');
-  const delEx=document.getElementById('ctxDelEx');
-  const hasSet=target.setId!=null;
-  // на ячейке подхода — только удалить подход
-  // на названии упражнения — только удалить упражнение
-  delSet.style.display=hasSet?'flex':'none';
-  sep.style.display=false?'block':'none';
-  delEx.style.display=hasSet?'none':'flex';
-  menu.classList.add('open');
-  const x=Math.min(e.clientX,window.innerWidth-180);
-  const y=Math.min(e.clientY,window.innerHeight-120);
-  menu.style.left=x+'px';menu.style.top=y+'px';
-}
-document.getElementById('ctxDelSet').addEventListener('click',()=>{
-  if(ctxTarget.setId==null)return;
-  sets=sets.filter(s=>s.id!==ctxTarget.setId);
-  // перенумеровать подходы
-  sets.filter(s=>s.date===curDate&&s.exercise===ctxTarget.ex)
-      .sort((a,b)=>a.set_number-b.set_number)
-      .forEach((s,i)=>s.set_number=i+1);
-  persist();loadDayData();renderCalendar();
-  document.getElementById('ctxMenu').classList.remove('open');
-});
-document.getElementById('ctxDelEx').addEventListener('click',()=>{
-  if(!ctxTarget.ex)return;
-  sets=sets.filter(s=>!(s.date===curDate&&s.exercise===ctxTarget.ex));
-  persist();loadDayData();renderCalendar();
-  document.getElementById('ctxMenu').classList.remove('open');
-});
-document.addEventListener('click',()=>document.getElementById('ctxMenu').classList.remove('open'));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('ctxMenu').classList.remove('open');});
-
-document.getElementById('prevBtn').addEventListener('click',()=>{anchorMonday.setDate(anchorMonday.getDate()-7);renderCalendar();});
-document.getElementById('nextBtn').addEventListener('click',()=>{anchorMonday.setDate(anchorMonday.getDate()+7);renderCalendar();});
-renderCalendar();
-
-// ===== TELEGRAM SYNC =====
-const TG_TOKEN='8704042897:AAGJRQUbZbwo0cUJip_t0L-99SoL3XnALLA';
-const TG_CHAT='299428696';
-const TG_API=`https://api.telegram.org/bot${TG_TOKEN}`;
-
-function showToast(msg, color){
-  const t=document.getElementById('syncToast');
-  t.textContent=msg;
-  t.style.color=color||'var(--txt)';
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-async function tgSave(){
-  const btn=document.getElementById('syncSaveBtn');
-  btn.disabled=true;btn.textContent='⏳ Сохраняю...';
-  try{
-    const data={sets,nextId,exercises,bodyweight,records,savedAt:new Date().toISOString()};
-    const json=JSON.stringify(data);
-    const payload='GYM_DATA_V1::'+btoa(unescape(encodeURIComponent(json)));
-    const res=await fetch(`${TG_API}/sendMessage`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chat_id:TG_CHAT,text:payload,disable_notification:true})
-    });
-    const d=await res.json();
-    if(d.ok){
-      // запоминаем message_id последнего бэкапа
-      localStorage.setItem('gd_tg_msgid', d.result.message_id);
-      showToast('✅ Сохранено в Telegram','var(--green)');
-    } else {
-      showToast('❌ Ошибка: '+d.description,'var(--red)');
+    function persist() {
+      if (curDate) dirtyDates.add(curDate);
+      clearTimeout(persistTimer);
+      persistTimer = setTimeout(persistImmediately, 500);
     }
-  }catch(e){
-    showToast('❌ Нет соединения','var(--red)');
-  }
-  btn.disabled=false;btn.textContent='⬆ TG';
-}
 
-async function tgLoad(){
-  const btn=document.getElementById('syncLoadBtn');
-  btn.disabled=true;btn.textContent='⏳ Загружаю...';
-  try{
-    // Способ 1: знаем message_id — копируем сообщение себе и читаем текст
-    const savedMsgId=localStorage.getItem('gd_tg_msgid');
-    let payload=null;
+    function syncDirtyKeysToCloud() {
+      if (!isTg) return;
+      const keysArray = Array.from(pendingCloudSaves);
+      pendingCloudSaves.clear();
 
-    if(savedMsgId){
-      // forwardMessage чтобы получить текст через getUpdates
-      const fwdRes=await fetch(`${TG_API}/copyMessage`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({chat_id:TG_CHAT,from_chat_id:TG_CHAT,message_id:parseInt(savedMsgId),disable_notification:true})
+      keysArray.forEach(k => {
+        if (k.startsWith('DEL:')) {
+          TM.CloudStorage.removeItem(k.replace('DEL:', ''), (err) => {
+            if (err) pendingCloudSaves.add(k);
+          });
+        } else {
+          const v = localStorage.getItem(k);
+          if (v) {
+            TM.CloudStorage.setItem(k, v, (err) => {
+              if (err) pendingCloudSaves.add(k);
+            });
+          }
+        }
       });
-      const fwd=await fwdRes.json();
-      if(fwd.ok){
-        // теперь читаем это новое сообщение через getUpdates
-        await new Promise(r=>setTimeout(r,600));
-        const upd=await fetch(`${TG_API}/getUpdates?limit=10&allowed_updates=["message"]`);
-        const ud=await upd.json();
-        if(ud.ok&&ud.result.length){
-          const msgs=ud.result.filter(u=>u.message&&u.message.text&&u.message.text.startsWith('GYM_DATA_V1::'));
-          if(msgs.length) payload=msgs[msgs.length-1].message.text;
+    }
+
+    function syncCloudToLocal() {
+      if (!isTg) { document.getElementById('csLoader').classList.add('hidden'); return; }
+      TM.CloudStorage.getKeys((err, keys) => {
+        if (err) {
+          TM.showAlert('Ошибка сети при синхронизации. Загружен локальный кэш.');
+          finishCloudSync();
+          return;
+        }
+        if (!keys || !keys.length) {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && k.startsWith('gd_')) TM.CloudStorage.setItem(k, localStorage.getItem(k));
+          }
+          finishCloudSync();
+          return;
+        }
+        TM.CloudStorage.getItems(keys, (e, vals) => {
+          if (e) {
+            TM.showAlert('Ошибка загрузки данных из облака. Загружен локальный кэш.');
+          } else if (vals) {
+            Object.keys(vals).forEach(k => {
+              localStorage.setItem(k, vals[k]);
+            });
+            initLocalData();
+          }
+          finishCloudSync();
+        });
+      });
+    }
+
+    function finishCloudSync() {
+      document.getElementById('csLoader').classList.add('hidden');
+      buildExSelect();
+      renderHdrStats();
+      renderCalendar();
+      if (curDate) loadDayData();
+    }
+
+    window.addEventListener('load', syncCloudToLocal);
+
+    function limitNum(el) { if (!el) return; el.addEventListener('input', () => { let v = el.value.replace(/[^0-9.]/g, ''); const p = v.split('.'); if (p[0].length > 4) p[0] = p[0].slice(0, 4); v = p.length > 1 ? p[0] + '.' + p[1].slice(0, 1) : p[0]; if (el.value !== v) el.value = v; }); }
+    limitNum(document.getElementById('inPlan'));
+    limitNum(document.getElementById('inWt'));
+    limitNum(document.getElementById('inORM'));
+
+    const REC_EX = ['Становая тяга', 'Жим лёжа', 'Приседания'];
+    function renderHdrStats() {
+      document.getElementById('valBodyweight').textContent = bodyweight != null ? `${bodyweight} кг` : '— кг';
+      REC_EX.forEach(ex => {
+        const el = document.getElementById('rec' + ex);
+        if (el) el.textContent = records[ex] != null ? `${records[ex]} кг` : '— кг';
+      });
+    }
+    renderHdrStats();
+
+    document.getElementById('chipBodyweight').addEventListener('click', () => {
+      const valEl = document.getElementById('valBodyweight');
+      if (valEl.tagName === 'INPUT') return;
+      const inp = document.createElement('input');
+      inp.className = 'chip-input'; inp.type = 'number'; inp.min = 0; inp.max = 999; inp.step = 0.1;
+      inp.value = bodyweight || ''; inp.placeholder = 'кг';
+      valEl.replaceWith(inp); inp.focus(); inp.select();
+      function save() {
+        const v = parseFloat(inp.value);
+        bodyweight = isNaN(v) ? null : v;
+        persist();
+        const newEl = document.createElement('span');
+        newEl.id = 'valBodyweight'; newEl.className = 'stat-chip-val';
+        newEl.textContent = bodyweight != null ? `${bodyweight} кг` : '— кг';
+        inp.replaceWith(newEl);
+      }
+      inp.addEventListener('blur', save);
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.value = ''; inp.blur(); } });
+    });
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    function getMondayOf(date) {
+      const d = new Date(date);
+      const dow = d.getDay();
+      const diff = (dow === 0) ? -6 : 1 - dow;
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+    let anchorMonday = getMondayOf(now);
+    anchorMonday.setDate(anchorMonday.getDate() - 7);
+
+    function dkey(y, m, d) { return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`; }
+    function dateToKey(d) { return dkey(d.getFullYear(), d.getMonth(), d.getDate()); }
+    const todayStr = dateToKey(now);
+    const MONTHS_SHORT = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    const WEEKS = 4;
+    const DAYS_RU = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+
+    function getWorkoutsForRange(startDate, endDate) {
+      const byDate = {};
+      for (let m = new Date(startDate); m <= endDate; m.setDate(m.getDate() + 1)) {
+        const k = dateToKey(m);
+        const daySets = setsByDate[k];
+        if (!daySets || daySets.length === 0) continue;
+
+        const exByDate = {};
+        daySets.forEach(s => {
+          if (!exByDate[s.exercise]) exByDate[s.exercise] = [];
+          exByDate[s.exercise].push(s);
+        });
+
+        const orderedEx = [...new Set(daySets.map(s => s.exercise))];
+        byDate[k] = [];
+        orderedEx.forEach(ex => {
+          const exSets = exByDate[ex];
+          const maxWt = Math.max(...exSets.map(s => parseFloat(s.weight) || 0));
+          const sortedSets = [...exSets].sort((a, b) => a.set_number - b.set_number);
+
+          const setsNums = sortedSets.map(s => {
+            let v = s.fact != null ? String(s.fact) : s.plan != null ? String(s.plan) : '—';
+            let style = '';
+            if (s.fact != null && s.plan != null) {
+              const clr = s.fact >= s.plan ? 'var(--green)' : 'var(--red)';
+              style = `color:${clr}`;
+            }
+            return `<span class="chip-set-val" style="${style}">${v}</span>`;
+          }).join('');
+
+          const pctRatio = records[ex] != null && maxWt > 0 ? maxWt / records[ex] : null;
+          const wtColor = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt)';
+
+          byDate[k].push({ label: ex, weight: maxWt > 0 ? `<span style="color:${wtColor}">${maxWt}</span><span style="font-size:14px;color:var(--txt3);margin:0 0 0 1px;font-family:'Barlow', sans-serif">×</span>` : '', sets: setsNums });
+        });
+      }
+      return byDate;
+    }
+
+    function getMaxChips() {
+      const isMobile = window.innerWidth <= 600;
+      let cellH = isMobile ? 136 : 130;
+      if (!isMobile) {
+        const wrap = document.querySelector('.cal-scroll-wrap');
+        if (wrap) {
+          const h = wrap.clientHeight - 25;
+          if (h > 0) cellH = h / 4;
+        }
+      }
+      const avail = cellH - (isMobile ? 16 : 14);
+      const chipH = 21;
+      let max = Math.floor(avail / chipH);
+      return max < 2 ? 2 : max;
+    }
+
+    function renderDayChips(el, k, exList) {
+      const dnum = el.querySelector('.dnum');
+      el.innerHTML = '';
+      if (dnum) el.appendChild(dnum);
+
+      const MAX = getMaxChips();
+      const total = exList.length;
+
+      let showCount = total;
+      if (total > MAX) {
+        showCount = MAX - 1;
+      }
+
+      exList.slice(0, showCount).forEach((item, idx) => {
+        const chip = document.createElement('span');
+        let chipClass = 'day-chip';
+        if (idx === 0) chipClass += ' main';
+        chip.className = chipClass;
+        chip.innerHTML = `<span class="chip-label">${item.label}</span><div class="chip-metrics">${item.weight ? `<span class="chip-weight">${item.weight}</span>` : ''}<span class="chip-sets">${item.sets}</span></div>`;
+        chip.addEventListener('click', e => { e.stopPropagation(); openDay(k); });
+        el.appendChild(chip);
+      });
+
+      if (total > MAX) {
+        const more = document.createElement('span');
+        more.className = 'day-chip more';
+        more.textContent = `+${total - showCount} ещё`;
+        more.addEventListener('click', e => {
+          e.stopPropagation();
+          const parts = k.split('-');
+          const dObj = new Date(parts[0], parts[1] - 1, parts[2]);
+          showOverflowPop(k, parseInt(parts[2], 10), dObj.getDay(), exList, more);
+        });
+        el.appendChild(more);
+      }
+    }
+
+    function updateDayInCalendar(dateKey) {
+      const el = document.getElementById('day-' + dateKey);
+      if (!el) return;
+      const rawSet = setsByDate[dateKey] || [];
+      const exByDate = {};
+      rawSet.forEach(s => {
+        if (!exByDate[s.exercise]) exByDate[s.exercise] = [];
+        exByDate[s.exercise].push(s);
+      });
+      const orderedEx = [...new Set(rawSet.map(s => s.exercise))];
+      const exList = [];
+      orderedEx.forEach(ex => {
+        const exSets = exByDate[ex];
+        const maxWt = Math.max(...exSets.map(s => parseFloat(s.weight) || 0));
+        const sortedSets = [...exSets].sort((a, b) => a.set_number - b.set_number);
+
+        const setsNums = sortedSets.map(s => {
+          let v = s.fact != null ? String(s.fact) : s.plan != null ? String(s.plan) : '—';
+          let style = '';
+          if (s.fact != null && s.plan != null) {
+            const clr = s.fact >= s.plan ? 'var(--green)' : 'var(--red)';
+            style = `color:${clr}`;
+          }
+          return `<span class="chip-set-val" style="${style}">${v}</span>`;
+        }).join('');
+
+        const pctRatio = records[ex] != null && maxWt > 0 ? maxWt / records[ex] : null;
+        const wtColor = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt)';
+
+        exList.push({ label: ex, weight: maxWt > 0 ? `<span style="color:${wtColor}">${maxWt}</span><span style="font-size:14px;color:var(--txt3);margin:0 0 0 1px;font-family:'Barlow', sans-serif">×</span>` : '', sets: setsNums });
+      });
+      renderDayChips(el, dateKey, exList);
+    }
+
+    function renderCalendar() {
+      const startDate = new Date(anchorMonday);
+      const endDate = new Date(anchorMonday);
+      endDate.setDate(startDate.getDate() + WEEKS * 7 - 1);
+
+      const sm = startDate.getMonth(), em = endDate.getMonth();
+      const sy = startDate.getFullYear(), ey = endDate.getFullYear();
+      let title;
+      if (sy === ey && sm === em) title = `${MONTHS[sm]} ${sy}`;
+      else if (sy === ey) title = `${MONTHS[sm]} — ${MONTHS[em]} ${sy}`;
+      else title = `${MONTHS[sm]} ${sy} — ${MONTHS[em]} ${ey}`;
+      document.getElementById('monthTitle').textContent = title;
+
+      const g = document.getElementById('calGrid'); g.innerHTML = '';
+      const workouts = getWorkoutsForRange(startDate, endDate);
+
+      for (let i = 0; i < WEEKS * 7; i++) {
+        const cur = new Date(startDate);
+        cur.setDate(startDate.getDate() + i);
+        const k = dateToKey(cur);
+        const d = cur.getDate();
+        const m = cur.getMonth();
+        const dow = cur.getDay();
+        const isWeekend = dow === 0 || dow === 6;
+        const isFirstOfMonth = d === 1;
+
+        const el = document.createElement('div');
+        const cls = ['day'];
+        if (k === todayStr) cls.push('today');
+        if (isWeekend) cls.push('weekend');
+        cls.push(m % 2 === 0 ? 'month-a' : 'month-b');
+        el.className = cls.join(' ');
+        el.id = 'day-' + k;
+
+        const dnum = document.createElement('span');
+        dnum.className = 'dnum';
+        if (isFirstOfMonth) {
+          dnum.innerHTML = `<span style="font-size:10px;color:var(--accent2);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;display:block;line-height:1.2">${MONTHS_SHORT[m]}</span>${d}`;
+        } else { dnum.textContent = d; }
+        el.appendChild(dnum);
+
+        const exList = workouts[k] || [];
+        renderDayChips(el, k, exList);
+
+        el.addEventListener('click', () => openDay(k));
+        g.appendChild(el);
+      }
+    }
+
+    function showOverflowPop(dateKey, d, dow, exList, anchor) {
+      const pop = document.getElementById('overflowPop');
+      document.getElementById('ovDow').textContent = DAYS_RU[dow];
+      document.getElementById('ovDay').textContent = d;
+      const list = document.getElementById('ovList');
+      list.innerHTML = '';
+      exList.forEach((item, idx) => {
+        const chip = document.createElement('div');
+        let chipClass = 'day-chip';
+        if (idx === 0) chipClass += ' main';
+        chip.className = chipClass;
+        chip.style.marginBottom = '4px';
+        chip.innerHTML = `<span class="chip-label">${item.label}</span><div class="chip-metrics">${item.weight ? `<span class="chip-weight">${item.weight}</span>` : ''}<span class="chip-sets">${item.sets}</span></div>`;
+        chip.addEventListener('click', () => { closeOverflowPop(); openDay(dateKey); });
+        list.appendChild(chip);
+      });
+
+      const rect = anchor.getBoundingClientRect();
+      pop.style.display = 'block';
+      const pw = pop.offsetWidth || 220;
+      const ph = pop.offsetHeight || 200;
+      let left = rect.left;
+      let top = rect.bottom + 4;
+      if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+      if (top + ph > window.innerHeight - 12) top = rect.top - ph - 4;
+      pop.style.left = left + 'px'; pop.style.top = top + 'px';
+    }
+
+    function closeOverflowPop() { document.getElementById('overflowPop').style.display = 'none'; }
+    document.getElementById('ovClose').addEventListener('click', closeOverflowPop);
+    document.addEventListener('click', e => {
+      const pop = document.getElementById('overflowPop');
+      if (pop.style.display !== 'none' && !pop.contains(e.target)) closeOverflowPop();
+    });
+
+    let curDate = null;
+
+    function openDay(dateStr) {
+      curDate = dateStr;
+      const [y, mo, d] = dateStr.split('-');
+      document.getElementById('modalTitle').textContent = `Тренировка: ${d} ${MONTHS[parseInt(mo) - 1]} ${y}`;
+      document.getElementById('inPlan').value = '';
+      document.getElementById('inWt').value = '';
+      buildExSelect(); syncORM(); loadDayData();
+
+      document.getElementById('mbg').classList.add('open');
+      history.pushState({ modalOpen: true }, '', '#day-' + dateStr);
+    }
+
+    function closeDayModal() {
+      const mbg = document.getElementById('mbg');
+      if (mbg.classList.contains('open')) {
+        mbg.classList.remove('open');
+        if (history.state && history.state.modalOpen) {
+          history.back();
         }
       }
     }
 
-    // Способ 2: getUpdates напрямую (работает если не читали раньше)
-    if(!payload){
-      const upd=await fetch(`${TG_API}/getUpdates?limit=100`);
-      const ud=await upd.json();
-      if(ud.ok&&ud.result.length){
-        const msgs=ud.result.filter(u=>u.message&&u.message.text&&u.message.text.startsWith('GYM_DATA_V1::'));
-        if(msgs.length) payload=msgs[msgs.length-1].message.text;
+    document.getElementById('modalClose').addEventListener('click', closeDayModal);
+    document.getElementById('mbg').addEventListener('click', e => {
+      if (e.target === document.getElementById('mbg')) closeDayModal();
+    });
+
+    window.addEventListener('popstate', (e) => {
+      const mbg = document.getElementById('mbg');
+      if (mbg.classList.contains('open')) {
+        mbg.classList.remove('open');
       }
+    });
+
+    function buildExSelect() {
+      const sel = document.getElementById('exSelect'); const cur = sel.value; sel.innerHTML = '';
+      sortedExercises().forEach(ex => { const o = document.createElement('option'); o.value = ex; o.textContent = ex; sel.appendChild(o); });
+      if (cur && exercises.includes(cur)) sel.value = cur;
+      syncORM();
     }
 
-    if(!payload){
-      showToast('⚠️ Сначала сохрани данные через ⬆ TG','var(--yellow)');
-      btn.disabled=false;btn.textContent='⬇ TG';return;
+    function syncORM() {
+      const ex = document.getElementById('exSelect').value;
+      const ormIn = document.getElementById('inORM');
+      ormIn.value = records[ex] != null ? records[ex] : '';
     }
 
-    const b64=payload.replace('GYM_DATA_V1::','');
-    const json=decodeURIComponent(escape(atob(b64)));
-    const data=JSON.parse(json);
-    if(data.sets) sets=data.sets;
-    if(data.nextId) nextId=data.nextId;
-    if(data.exercises) exercises=data.exercises;
-    if(data.bodyweight!=null) bodyweight=data.bodyweight;
-    if(data.records) records=data.records;
-    persist();renderCalendar();renderHdrStats();
-    showToast('✅ Загружено из Telegram','var(--green)');
-  }catch(e){
-    console.error(e);
-    showToast('❌ Ошибка загрузки','var(--red)');
-  }
-  btn.disabled=false;btn.textContent='⬇ TG';
-}
+    document.getElementById('exSelect').addEventListener('change', syncORM);
 
-document.getElementById('syncSaveBtn').addEventListener('click',tgSave);
-document.getElementById('syncLoadBtn').addEventListener('click',tgLoad);
-// ===== END TELEGRAM SYNC =====
+    let ormTimer = null;
+    document.getElementById('inORM').addEventListener('input', () => {
+      clearTimeout(ormTimer);
+      ormTimer = setTimeout(() => {
+        const ex = document.getElementById('exSelect').value;
+        const v = parseFloat(document.getElementById('inORM').value);
+        if (!isNaN(v) && v > 0) records[ex] = v; else delete records[ex];
+        persist(); renderHdrStats();
+      }, 500);
+    });
 
-</script>
-<div class="sync-toast" id="syncToast"></div>
+    function sortedExercises() { const p = exercises.filter(e => PINNED.includes(e)).sort((a, b) => PINNED.indexOf(a) - PINNED.indexOf(b)); const r = exercises.filter(e => !PINNED.includes(e)).sort(); return [...p, ...r]; }
+
+    function loadDayData() {
+      const daySet = setsByDate[curDate] || [];
+      const exOrder = []; const seen = new Set();
+      [...daySet].sort((a, b) => a.id - b.id).forEach(s => { if (!seen.has(s.exercise)) { seen.add(s.exercise); exOrder.push(s.exercise); } });
+      const wrap = document.getElementById('workoutTableWrap'); wrap.innerHTML = '';
+
+      if (!daySet.length) {
+        wrap.innerHTML = '<div class="ex-cards-empty">Нет подходов — добавь первый</div>';
+        renderHdrStats(); return;
+      }
+
+      const maxSets = exOrder.reduce((m, ex) => {
+        const cnt = daySet.filter(s => s.exercise === ex).length;
+        return cnt > m ? cnt : m;
+      }, 0);
+
+      const table = document.createElement('table');
+      table.className = 'workout-table';
+
+      const thead = document.createElement('thead');
+      let thHTML = '<tr><th class="th-name">Упражнение</th><th class="th-num">%1ПМ</th><th class="th-num">Вес кг</th>';
+      for (let i = 1; i <= maxSets; i++) thHTML += `<th class="th-num">${i} пдх</th>`;
+      thHTML += '</tr>';
+      thead.innerHTML = thHTML;
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+
+      exOrder.forEach((ex, exIdx) => {
+        const isMain = exIdx === 0;
+        const exSets = daySet.filter(s => s.exercise === ex).sort((a, b) => a.set_number - b.set_number);
+        const maxWt = Math.max(...exSets.map(s => parseFloat(s.weight) || 0));
+        const weight = maxWt > 0 ? maxWt : null;
+        const pctRatio = records[ex] != null && weight != null ? weight / records[ex] : null;
+        const pct = pctRatio != null ? Math.round(pctRatio * 100) + '%' : '—';
+        const pctColor = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt3)';
+
+        const tr = document.createElement('tr');
+        tr.dataset.ex = ex;
+
+        const tdName = document.createElement('td');
+        tdName.className = 'td-name' + (isMain ? ' is-main' : '');
+        tdName.textContent = ex;
+        tdName.style.cursor = 'default';
+        tr.appendChild(tdName);
+
+        const tdPct = document.createElement('td');
+        tdPct.className = 'td-pct'; tdPct.style.color = pctColor; tdPct.textContent = pct;
+        tr.appendChild(tdPct);
+
+        const tdWt = document.createElement('td');
+        tdWt.className = 'td-weight';
+        tdWt.textContent = weight != null ? weight + ' кг' : '—';
+        tdWt.style.cursor = 'pointer';
+        tr.appendChild(tdWt);
+
+        for (let i = 0; i < maxSets; i++) {
+          const td = document.createElement('td'); td.className = 'td-set';
+          const s = exSets[i] || null;
+
+          if (!s) {
+            const cell = document.createElement('div');
+            cell.className = 'set-cell empty'; cell.textContent = '+'; cell.title = 'Добавить подход';
+            cell.dataset.ex = ex;
+            td.appendChild(cell);
+          } else {
+            const cellWrap = document.createElement('div');
+            cellWrap.className = 'set-cell-wrap';
+            cellWrap.title = 'ПКМ — удалить подход';
+            cellWrap.dataset.setId = s.id;
+            cellWrap.dataset.ex = ex;
+
+            const planEl = document.createElement('span');
+            planEl.className = 'set-plan'; planEl.textContent = s.plan != null ? s.plan : '—';
+            planEl.style.cursor = 'pointer';
+            planEl.dataset.setId = s.id;
+
+            const sep = document.createElement('span'); sep.className = 'set-sep'; sep.textContent = '→';
+
+            const factEl = document.createElement('input');
+            const initDone = s.fact != null && s.plan != null && s.fact >= s.plan;
+            const initFail = s.fact != null && s.plan != null && s.fact < s.plan;
+            factEl.className = 'set-fact' + (initDone ? ' fact-done' : initFail ? ' fact-fail' : '');
+            factEl.type = 'number'; factEl.min = '0'; factEl.max = 999;
+            factEl.value = s.fact != null ? s.fact : ''; factEl.placeholder = '—';
+            factEl.dataset.setId = s.id;
+
+            cellWrap.appendChild(planEl); cellWrap.appendChild(sep); cellWrap.appendChild(factEl);
+            td.appendChild(cellWrap);
+          }
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      wrap.appendChild(table);
+      renderHdrStats();
+    }
+
+    document.getElementById('workoutTableWrap').addEventListener('click', e => {
+      const addBtn = e.target.closest('.set-cell.empty');
+      if (addBtn) {
+        const ex = addBtn.dataset.ex;
+        const exSets = (setsByDate[curDate] || []).filter(s => s.exercise === ex).sort((a,b)=>a.set_number-b.set_number);
+        const lastSet = exSets[exSets.length - 1];
+        if (!setsByDate[curDate]) setsByDate[curDate] = [];
+        setsByDate[curDate].push({ id: nextId++, date: curDate, exercise: ex, set_number: exSets.length + 1, plan: lastSet ? lastSet.plan : null, fact: null, weight: lastSet ? lastSet.weight : null });
+        persist(); loadDayData(); updateDayInCalendar(curDate);
+        return;
+      }
+
+      const tdWt = e.target.closest('.td-weight');
+      if (tdWt && !tdWt.querySelector('input')) {
+        const tr = tdWt.closest('tr');
+        const ex = tr.dataset.ex;
+        const exSets = (setsByDate[curDate] || []).filter(s => s.exercise === ex);
+        const weights = exSets.map(s => parseFloat(s.weight)).filter(w => !isNaN(w) && w > 0);
+        const maxWt = weights.length ? Math.max(...weights) : null;
+
+        const inp = document.createElement('input');
+        inp.className = 'td-weight-input'; inp.type = 'number'; inp.min = 0; inp.max = 9999; inp.step = 0.5;
+        // avoid caching old values if they changed
+        inp.value = maxWt != null ? maxWt : ''; inp.placeholder = 'кг';
+        tdWt.textContent = ''; tdWt.appendChild(inp);
+        inp.focus(); inp.select();
+
+        let saved = false;
+        function saveWt() {
+          if (saved) return; saved = true;
+          const v = parseFloat(inp.value);
+          const newWt = isNaN(v) ? null : v;
+          (setsByDate[curDate] || []).filter(s => s.exercise === ex).forEach(s => s.weight = newWt);
+          // Inline replacement without full table reload!
+          tdWt.textContent = newWt != null ? newWt + ' кг' : '—';
+          // Also update PCT column dynamically
+          const pctRatio = records[ex] != null && newWt != null ? newWt / records[ex] : null;
+          const pct = pctRatio != null ? Math.round(pctRatio * 100) + '%' : '—';
+          const pctColor = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt3)';
+          const tdPct = tr.querySelector('.td-pct');
+          if (tdPct) { tdPct.style.color = pctColor; tdPct.textContent = pct; }
+          
+          persist(); updateDayInCalendar(curDate);
+        }
+        inp.addEventListener('blur', saveWt);
+        inp.addEventListener('keydown', ev => {
+          if (ev.key === 'Enter') { inp.blur(); }
+          if (ev.key === 'Escape') { 
+            saved = true; // prevent blur from saving
+            tdWt.textContent = maxWt != null ? maxWt + ' кг' : '—'; 
+          }
+          ev.stopPropagation();
+        });
+        inp.addEventListener('click', ev => ev.stopPropagation());
+        return;
+      }
+
+      const planEl = e.target.closest('.set-plan');
+      if (planEl && !planEl.querySelector('input')) {
+        const setId = parseInt(planEl.dataset.setId);
+        const s = (setsByDate[curDate] || []).find(x => x.id === setId);
+        if (!s) return;
+
+        const inp = document.createElement('input');
+        inp.type = 'number'; inp.min = 0; inp.max = 999;
+        inp.style.cssText = 'width:28px;border:none;background:transparent;font-family:"Barlow Condensed",sans-serif;font-size:14px;font-weight:700;color:var(--accent);outline:none;text-align:center;padding:0;border-bottom:1px solid var(--accent)';
+        const oldVal = s.plan != null ? s.plan : '';
+        inp.value = oldVal; inp.placeholder = '—';
+        planEl.textContent = ''; planEl.appendChild(inp);
+        inp.focus(); inp.select();
+
+        let saved = false;
+        function savePlan() {
+          if (saved) return; saved = true;
+          const v = inp.value.trim();
+          s.plan = v !== '' ? parseInt(v) : null;
+          planEl.textContent = s.plan != null ? s.plan : '—';
+          updateFactColors(s, planEl.nextElementSibling?.nextElementSibling); // sibling input
+          persist(); updateDayInCalendar(curDate);
+        }
+        inp.addEventListener('blur', savePlan);
+        inp.addEventListener('keydown', ev => { 
+          if (ev.key === 'Enter') inp.blur(); 
+          if (ev.key === 'Escape') { 
+            saved = true; 
+            planEl.textContent = oldVal !== '' ? oldVal : '—'; 
+          } 
+          ev.stopPropagation(); 
+        });
+        inp.addEventListener('click', ev => ev.stopPropagation());
+        return;
+      }
+    });
+
+    document.getElementById('workoutTableWrap').addEventListener('contextmenu', e => {
+      const cellWrap = e.target.closest('.set-cell-wrap');
+      if (cellWrap) {
+        e.preventDefault();
+        showCtxMenu(e, { ex: cellWrap.dataset.ex, setId: parseInt(cellWrap.dataset.setId) });
+        return;
+      }
+      const tdName = e.target.closest('.td-name');
+      if (tdName) {
+        e.preventDefault();
+        showCtxMenu(e, { ex: tdName.textContent, setId: null });
+        return;
+      }
+    });
+
+    document.getElementById('workoutTableWrap').addEventListener('input', e => {
+      if (e.target.classList.contains('set-fact')) {
+        const inp = e.target;
+        const setId = parseInt(inp.dataset.setId);
+        const s = (setsByDate[curDate] || []).find(x => x.id === setId);
+        if (!s) return;
+        
+        const setFactState = () => {
+          const v = inp.value;
+          s.fact = v !== '' ? parseInt(v) : null;
+          updateFactColors(s, inp);
+          persist(); updateDayInCalendar(curDate);
+        };
+
+        clearTimeout(inp._factTimer);
+        inp._factTimer = setTimeout(setFactState, 400);
+      }
+    });
+
+    document.getElementById('workoutTableWrap').addEventListener('keydown', e => {
+      if (e.target.classList.contains('set-fact') && e.key === 'Enter') {
+        e.target.blur();
+      }
+    });
+    
+    function updateFactColors(s, inp) {
+      if (!inp) return;
+      const hasFact = s.fact != null;
+      const done = hasFact && s.plan != null && s.fact >= s.plan;
+      const fail = hasFact && s.plan != null && s.fact < s.plan;
+      inp.className = 'set-fact' + (done ? ' fact-done' : fail ? ' fact-fail' : '');
+    }
+
+
+    document.getElementById('addSetBtn').addEventListener('click', () => {
+      const ex = document.getElementById('exSelect').value;
+      const plan = parseInt(document.getElementById('inPlan').value) || null;
+      const wt = parseFloat(document.getElementById('inWt').value);
+      const weight = isNaN(wt) ? null : wt;
+
+      if (!ex) return;
+      if (weight === null && plan === null) return;
+      if (weight === 0 && plan === null) {
+        const inp = document.getElementById('inPlan');
+        inp.focus(); inp.style.borderColor = 'var(--red)';
+        setTimeout(() => inp.style.borderColor = '', 1200);
+        return;
+      }
+
+      if (!setsByDate[curDate]) setsByDate[curDate] = [];
+      const exSets = setsByDate[curDate].filter(s => s.exercise === ex);
+      const setNum = exSets.length ? Math.max(...exSets.map(s => s.set_number)) + 1 : 1;
+      setsByDate[curDate].push({ id: nextId++, date: curDate, exercise: ex, set_number: setNum, plan, fact: null, weight });
+
+      document.getElementById('inPlan').value = '';
+      document.getElementById('inWt').value = '';
+
+      persist(); loadDayData(); updateDayInCalendar(curDate);
+    });
+    ['inPlan', 'inWt', 'inORM'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('addSetBtn').click(); });
+    });
+
+    let selEx = null, edMode = null;
+    function renderExListbox() {
+      const box = document.getElementById('exListbox'); box.innerHTML = ''; selEx = null;
+      sortedExercises().forEach(ex => {
+        const div = document.createElement('div'); div.className = 'ex-listbox-item'; div.textContent = ex;
+        if (ex === document.getElementById('exSelect').value) div.classList.add('sel');
+        div.addEventListener('click', () => {
+          selEx = ex;
+          document.getElementById('exSelect').value = ex;
+          syncORM();
+          document.querySelectorAll('.ex-listbox-item').forEach(d => d.classList.remove('sel')); div.classList.add('sel');
+          document.getElementById('editorDrop').classList.remove('open');
+        });
+        div.addEventListener('contextmenu', e => {
+          e.preventDefault(); e.stopPropagation();
+          selEx = ex;
+          document.querySelectorAll('.ex-listbox-item').forEach(d => d.classList.remove('sel')); div.classList.add('sel');
+          showExCtxMenu(e, ex);
+        });
+        box.appendChild(div);
+      });
+    }
+
+    const exCtxMenu = document.createElement('div');
+    exCtxMenu.className = 'ctx-menu'; exCtxMenu.id = 'exCtxMenu';
+    exCtxMenu.innerHTML = `<div class="ctx-item danger" id="exCtxDel">✕ Удалить</div>`;
+    document.body.appendChild(exCtxMenu);
+
+    function showExCtxMenu(e, ex) {
+      const menu = document.getElementById('exCtxMenu');
+      const x = Math.min(e.clientX, window.innerWidth - 180);
+      const y = Math.min(e.clientY, window.innerHeight - 100);
+      menu.style.left = x + 'px'; menu.style.top = y + 'px';
+      menu.classList.add('open');
+    }
+
+    document.getElementById('exCtxDel').addEventListener('click', () => {
+      if (!selEx) return;
+      document.getElementById('exCtxMenu').classList.remove('open');
+      exercises = exercises.filter(x => x !== selEx);
+      persist(); buildExSelect(); renderExListbox();
+    });
+    document.addEventListener('click', () => document.getElementById('exCtxMenu').classList.remove('open'));
+    document.getElementById('exSelect').addEventListener('mousedown', e => {
+      e.preventDefault();
+      const d = document.getElementById('editorDrop');
+      const isOpen = d.classList.contains('open');
+      d.classList.remove('open');
+      if (!isOpen) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const isMobile = window.innerWidth <= 600;
+        let dropW = Math.max(300, rect.width);
+        d.style.left = ''; d.style.top = ''; d.style.bottom = ''; d.style.width = dropW + 'px';
+        let left = rect.left;
+        if (left + dropW > window.innerWidth - 8) left = window.innerWidth - dropW - 8;
+        if (left < 8) left = 8;
+        d.style.left = left + 'px';
+        if (isMobile) {
+          d.style.position = 'fixed'; d.style.top = 'auto';
+          d.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+          d.style.width = (window.innerWidth - 16) + 'px'; d.style.left = '8px';
+        } else {
+          d.style.bottom = ''; let top = rect.bottom + 4;
+          const dropH = 280;
+          if (top + dropH > window.innerHeight - 20) top = rect.top - dropH - 4;
+          d.style.top = top + 'px';
+        }
+        d.classList.add('open');
+        renderExListbox();
+      }
+    });
+    document.addEventListener('click', e => {
+      const drop = document.getElementById('editorDrop');
+      const sel = document.getElementById('exSelect');
+      if (drop && !drop.contains(e.target) && e.target !== sel) drop.classList.remove('open');
+    });
+    document.getElementById('btnAdd').addEventListener('click', () => { edMode = 'add'; document.getElementById('edInputRow').style.display = 'flex'; document.getElementById('edInput').value = ''; document.getElementById('edInput').focus(); });
+
+    document.getElementById('edOk').addEventListener('click', () => {
+      const v = document.getElementById('edInput').value.trim(); if (!v) return;
+      if (!exercises.includes(v)) { exercises.push(v); persist(); buildExSelect(); renderExListbox(); document.getElementById('exSelect').value = v; syncORM(); }
+      document.getElementById('edInputRow').style.display = 'none'; edMode = null;
+      document.getElementById('editorDrop').classList.remove('open');
+    });
+    document.getElementById('edInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('edOk').click(); if (e.key === 'Escape') { document.getElementById('edInputRow').style.display = 'none'; edMode = null; } });
+
+    let ctxTarget = { ex: null, setId: null };
+    function showCtxMenu(e, target) {
+      ctxTarget = target;
+      const menu = document.getElementById('ctxMenu');
+      const delSet = document.getElementById('ctxDelSet');
+      const sep = document.getElementById('ctxSep');
+      const delEx = document.getElementById('ctxDelEx');
+      const hasSet = target.setId != null;
+      delSet.style.display = hasSet ? 'flex' : 'none';
+      sep.style.display = hasSet ? 'block' : 'none';
+      delEx.style.display = hasSet ? 'none' : 'flex';
+      menu.classList.add('open');
+      const x = Math.min(e.clientX, window.innerWidth - 180);
+      const y = Math.min(e.clientY, window.innerHeight - 120);
+      menu.style.left = x + 'px'; menu.style.top = y + 'px';
+    }
+    document.getElementById('ctxDelSet').addEventListener('click', () => {
+      if (ctxTarget.setId == null) return;
+      setsByDate[curDate] = (setsByDate[curDate] || []).filter(s => s.id !== ctxTarget.setId);
+      (setsByDate[curDate] || []).filter(s => s.exercise === ctxTarget.ex)
+        .sort((a, b) => a.set_number - b.set_number)
+        .forEach((s, i) => s.set_number = i + 1);
+      persist(); loadDayData(); updateDayInCalendar(curDate);
+      document.getElementById('ctxMenu').classList.remove('open');
+    });
+    document.getElementById('ctxDelEx').addEventListener('click', () => {
+      if (!ctxTarget.ex) return;
+      setsByDate[curDate] = (setsByDate[curDate] || []).filter(s => s.exercise !== ctxTarget.ex);
+      persist(); loadDayData(); updateDayInCalendar(curDate);
+      document.getElementById('ctxMenu').classList.remove('open');
+    });
+    document.addEventListener('click', () => document.getElementById('ctxMenu').classList.remove('open'));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('ctxMenu').classList.remove('open'); });
+
+    document.getElementById('prevBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() - 7); renderCalendar(); });
+    document.getElementById('nextBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() + 7); renderCalendar(); });
+    renderCalendar();
+
+    let resizeTimerId;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimerId);
+      resizeTimerId = setTimeout(renderCalendar, 300);
+    });
+
+  </script>
 </body>
+
 </html>
