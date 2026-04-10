@@ -47,9 +47,7 @@
     }
 
     .wrapper {
-      width: 100%;
-      height: 100vh;
-      padding: 0.25rem 1rem 0.5rem;
+      padding: 0.5rem 1rem 0.5rem;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -61,7 +59,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 2px;
+      padding: 0.5rem 2px 0;
       margin-bottom: 0.5rem;
       position: relative
     }
@@ -131,14 +129,35 @@
       z-index: 600;
       padding: 14px;
       box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+      touch-action: none;
     }
 
     .editor-drop.open {
       display: block
     }
 
+    .editor-drop-handle {
+      display: none;
+      justify-content: center;
+      padding: 0 0 10px;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .editor-drop-handle::before {
+      content: '';
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border2);
+    }
+
+    @media(max-width:600px) {
+      .editor-drop-handle { display: flex }
+    }
+
     .editor-drop-title {
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--txt2);
       margin-bottom: 8px;
@@ -157,7 +176,7 @@
 
     .ex-listbox-item {
       padding: 9px 12px;
-      font-size: 13px;
+      font-size: 16px;
       color: var(--txt);
       cursor: pointer;
       border-bottom: 1px solid var(--border);
@@ -189,7 +208,7 @@
       background: var(--surface2);
       border-radius: 8px;
       padding: 7px 4px;
-      font-size: 12px;
+      font-size: 14px;
       cursor: pointer;
       color: var(--txt);
       font-weight: 600;
@@ -211,7 +230,7 @@
       border: 1px solid var(--border2);
       border-radius: 8px;
       padding: 8px 10px;
-      font-size: 13px;
+      font-size: 16px;
       background: var(--bg);
       color: var(--txt);
       outline: none
@@ -226,7 +245,7 @@
       border: none;
       border-radius: 8px;
       padding: 8px 14px;
-      font-size: 13px;
+      font-size: 16px;
       color: #fff;
       cursor: pointer;
       font-weight: 700
@@ -275,7 +294,7 @@
     .cal-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      grid-template-rows: repeat(4, 1fr);
+      grid-template-rows: repeat(4, minmax(100px, 1fr));
       gap: 0;
       flex: 1;
       min-height: 0
@@ -287,7 +306,7 @@
       background: var(--bg);
       border-right: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
-      padding: 2px 3px 1px;
+      padding: 0 3px 1px;
       cursor: pointer;
       overflow: hidden;
       position: relative;
@@ -354,13 +373,14 @@
     .dnum {
       font-family: 'Barlow', sans-serif;
       font-size: 10px;
-      font-weight: 500;
+      font-weight: 700;
       color: var(--txt2);
-      margin-bottom: 0px;
-      display: inline-block;
+      display: block;
       line-height: 1;
-      min-width: 0;
+      min-width: 14px;
       text-align: left;
+      margin: 0;
+      padding: 3px 3px 2px;
     }
 
     .day.weekend .dnum {
@@ -528,7 +548,7 @@
       border: 1px solid var(--border2);
       background: var(--surface2);
       cursor: pointer;
-      font-size: 15px;
+      font-size: 18px;
       color: var(--txt2);
       display: flex;
       align-items: center;
@@ -559,12 +579,12 @@
     }
 
     .input-select {
-      flex: 0 0 50%;
-      max-width: 50%;
+      flex: 1;
+      max-width: 100%;
       border: 1px solid var(--border2);
       border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 13px;
+      padding: 8px 2px;
+      font-size: 16px;
       font-weight: 600;
       background: var(--surface2);
       color: var(--txt);
@@ -585,7 +605,7 @@
     }
 
     .input-label {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--txt3);
       white-space: nowrap;
@@ -601,7 +621,7 @@
       border: 1px solid var(--border2);
       border-radius: 8px;
       padding: 8px 10px;
-      font-size: 13px;
+      font-size: 19px;
       font-weight: 600;
       background: var(--surface2);
       color: var(--txt);
@@ -620,7 +640,7 @@
       border-radius: 8px;
       padding: 10px 24px;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 800;
       color: #fff;
       white-space: nowrap;
@@ -655,7 +675,7 @@
 
     .workout-table thead th {
       padding: 9px 14px;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 800;
       color: var(--txt3);
       text-transform: uppercase;
@@ -693,8 +713,8 @@
 
     .td-name {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 15px;
-      font-weight: 800;
+      font-size: 20px;
+      font-weight: 500;
       color: var(--txt);
       text-transform: uppercase;
       letter-spacing: 0.03em;
@@ -706,7 +726,7 @@
     }
 
     .td-weight {
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--txt);
       white-space: nowrap;
@@ -714,7 +734,7 @@
     }
 
     .td-pct {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
       text-align: center;
       white-space: nowrap;
@@ -736,7 +756,7 @@
       border: 1.5px solid var(--border2);
       background: var(--surface2);
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px;
+      font-size: 19px;
       font-weight: 700;
       color: var(--txt2);
       cursor: pointer;
@@ -753,7 +773,7 @@
     .set-cell.empty {
       border-style: dashed;
       color: var(--txt3);
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 400
     }
 
@@ -815,7 +835,7 @@
       border: none;
       background: transparent;
       font-family: 'Barlow', sans-serif;
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--accent);
       outline: none;
@@ -850,15 +870,17 @@
 
     .set-plan {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 15px;
-      font-weight: 800;
+      font-size: 18px;
+      font-weight: 500;
       color: var(--txt2);
       white-space: nowrap;
       flex-shrink: 0;
     }
 
     .set-sep {
-      font-size: 11px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
       color: var(--txt3);
       flex-shrink: 0
     }
@@ -868,8 +890,8 @@
       border: none;
       background: transparent;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 15px;
-      font-weight: 800;
+      font-size: 18px;
+      font-weight: 500;
       color: var(--txt2);
       outline: none;
       text-align: center;
@@ -899,7 +921,7 @@
       text-align: center;
       color: var(--txt3);
       padding: 32px;
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.07em
@@ -912,7 +934,7 @@
     }
 
     .pf-label {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--txt3);
       white-space: nowrap;
@@ -927,13 +949,13 @@
       border: 1px solid var(--border2);
       border-radius: 8px;
       padding: 7px 6px;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 16px;
       background: var(--surface2);
       color: var(--txt);
       outline: none;
       text-align: center;
-      font-family: 'Barlow', sans-serif
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 500
     }
 
     .pf-input:focus {
@@ -1030,12 +1052,12 @@
       border-bottom: 1px solid var(--accent);
       background: transparent;
       color: var(--txt);
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 16px;
       outline: none;
       text-align: center;
       padding: 0 2px;
-      font-family: 'Barlow', sans-serif
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 500
     }
 
 
@@ -1062,6 +1084,25 @@
         margin: 0;
         display: flex;
         flex-direction: column;
+        transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+        will-change: transform;
+      }
+
+      .modal-drag-handle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 0 4px;
+        cursor: grab;
+        touch-action: none;
+      }
+
+      .modal-drag-handle::before {
+        content: '';
+        width: 40px;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--border2);
       }
 
       .modal-hdr {
@@ -1096,6 +1137,7 @@
       .workout-table th.th-name,
       .workout-table td.td-name {
         padding-right: 20px;
+        font-size: 16px;
       }
 
       .workout-table tbody td {
@@ -1239,12 +1281,12 @@
       }
 
       .set-fact {
-        font-size: 14px;
+        font-size: 18px;
         width: 24px;
       }
 
       .set-plan {
-        font-size: 14px;
+        font-size: 18px;
       }
     }
 
@@ -1353,7 +1395,8 @@
   </div>
 
   <div class="mbg" id="mbg">
-    <div class="modal">
+    <div class="modal" id="modalBox">
+      <div class="modal-drag-handle" id="modalDragHandle"></div>
       <div class="modal-hdr">
         <h2 id="modalTitle"></h2>
         <button class="modal-close" id="modalClose">&#x2715;</button>
@@ -1367,6 +1410,7 @@
             <input class="input-num no-arrows" id="inORM" type="number" min="0" max="9999" step="0.5" placeholder="кг"
               style="color:var(--accent2);flex-shrink:0">
             <div class="editor-drop" id="editorDrop">
+              <div class="editor-drop-handle" id="editorDropHandle"></div>
               <div class="editor-drop-title">Упражнения</div>
               <div class="ex-listbox" id="exListbox"></div>
               <div class="editor-btns">
@@ -1410,9 +1454,6 @@
     if (isTg) { 
       TM.expand(); 
       TM.ready(); 
-      if (typeof TM.requestFullscreen === 'function') {
-        try { TM.requestFullscreen(); } catch(e) {}
-      }
     }
     const MONTHS = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     const PINNED = ['Приседания', 'Жим лёжа', 'Становая тяга'];
@@ -1656,16 +1697,16 @@
       const isMobile = window.innerWidth <= 600;
       let cellH = isMobile ? 136 : 130;
       if (!isMobile) {
-        const wrap = document.querySelector('.cal-scroll-wrap');
-        if (wrap) {
-          const h = wrap.clientHeight - 25;
+        const bodyH = document.body.clientHeight;
+        if (bodyH > 0) {
+          const h = bodyH - 100; // Высота шапки (месяц+рекорды+паддинги+дни недели)
           if (h > 0) cellH = h / 4;
         }
       }
       const avail = cellH - (isMobile ? 16 : 14);
       const chipH = 21;
       let max = Math.floor(avail / chipH);
-      return max < 2 ? 2 : max;
+      return max < 4 ? 4 : max;
     }
 
     function renderDayChips(el, k, exList) {
@@ -1907,7 +1948,7 @@
       table.className = 'workout-table';
 
       const thead = document.createElement('thead');
-      let thHTML = '<tr><th class="th-name">Упражнение</th><th class="th-num">%1ПМ</th><th class="th-num">Вес кг</th>';
+      let thHTML = '<tr><th class="th-num" style="width:20px;color:var(--txt3)">#</th><th class="th-name">Упражнение</th><th class="th-num">%1ПМ</th><th class="th-num">Вес кг</th>';
       for (let i = 1; i <= maxSets; i++) thHTML += `<th class="th-num">${i} пдх</th>`;
       thHTML += '</tr>';
       thead.innerHTML = thHTML;
@@ -1926,6 +1967,11 @@
 
         const tr = document.createElement('tr');
         tr.dataset.ex = ex;
+
+        const tdNum = document.createElement('td');
+        tdNum.style.cssText = 'font-size:11px;font-weight:700;color:var(--txt3);text-align:center;padding-right:4px;width:20px;font-family:Barlow,sans-serif';
+        tdNum.textContent = exIdx + 1;
+        tr.appendChild(tdNum);
 
         const tdName = document.createElement('td');
         tdName.className = 'td-name' + (isMain ? ' is-main' : '');
@@ -2282,7 +2328,121 @@
 
     document.getElementById('prevBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() - 7); renderCalendar(); });
     document.getElementById('nextBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() + 7); renderCalendar(); });
+
+    // ── Свайп вниз для закрытия модалки (мобайл) ──
+    (function() {
+      const handle   = document.getElementById('modalDragHandle');
+      const modalHdr = document.querySelector('.modal-hdr');
+      const modal    = document.getElementById('modalBox');
+      const mbg      = document.getElementById('mbg');
+
+      let startY = 0, currentY = 0, dragging = false;
+      const THRESHOLD = 120;
+
+      function isMobile() { return window.innerWidth <= 600; }
+
+      function onStart(e) {
+        if (!isMobile()) return;
+        dragging = true;
+        startY = e.touches ? e.touches[0].clientY : e.clientY;
+        currentY = 0;
+        modal.style.transition = 'none';
+      }
+
+      function onMove(e) {
+        if (!dragging) return;
+        const y = (e.touches ? e.touches[0].clientY : e.clientY) - startY;
+        if (y < 0) return;
+        currentY = y;
+        modal.style.transform = `translateY(${y}px)`;
+        const ratio = Math.max(0, 1 - y / 300);
+        mbg.style.background = `rgba(0,0,0,${0.75 * ratio})`;
+        if (e.cancelable) e.preventDefault();
+      }
+
+      function onEnd() {
+        if (!dragging) return;
+        dragging = false;
+        modal.style.transition = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+        if (currentY > THRESHOLD) {
+          modal.style.transform = `translateY(100%)`;
+          mbg.style.background = 'rgba(0,0,0,0)';
+          setTimeout(() => {
+            mbg.classList.remove('open');
+            modal.style.transform = '';
+            mbg.style.background = '';
+          }, 300);
+        } else {
+          modal.style.transform = '';
+          mbg.style.background = '';
+        }
+      }
+
+      [handle, modalHdr].forEach(el => {
+        el.addEventListener('touchstart', onStart, { passive: true });
+        el.addEventListener('touchmove',  onMove,  { passive: false });
+        el.addEventListener('touchend',   onEnd,   { passive: true });
+      });
+    })();
+
+    // ── Свайп вниз для закрытия выпадающего списка упражнений (мобайл) ──
+    (function() {
+      const handle = document.getElementById('editorDropHandle');
+      const drop   = document.getElementById('editorDrop');
+      if (!handle || !drop) return;
+
+      let startY = 0, currentY = 0, dragging = false;
+      const THRESHOLD = 80;
+
+      function isMobile() { return window.innerWidth <= 600; }
+
+      handle.addEventListener('touchstart', e => {
+        if (!isMobile()) return;
+        dragging = true;
+        startY = e.touches[0].clientY;
+        currentY = 0;
+        drop.style.transition = 'none';
+      }, { passive: true });
+
+      handle.addEventListener('touchmove', e => {
+        if (!dragging) return;
+        const y = e.touches[0].clientY - startY;
+        if (y < 0) return;
+        currentY = y;
+        drop.style.transform = `translateY(${y}px)`;
+        if (e.cancelable) e.preventDefault();
+      }, { passive: false });
+
+      handle.addEventListener('touchend', () => {
+        if (!dragging) return;
+        dragging = false;
+        if (currentY > THRESHOLD) {
+          drop.style.transition = 'transform 0.25s cubic-bezier(0.32,0.72,0,1)';
+          drop.style.transform = `translateY(120%)`;
+          setTimeout(() => {
+            drop.classList.remove('open');
+            drop.style.transform = '';
+            drop.style.transition = '';
+          }, 250);
+        } else {
+          drop.style.transition = 'transform 0.2s cubic-bezier(0.32,0.72,0,1)';
+          drop.style.transform = '';
+          setTimeout(() => drop.style.transition = '', 200);
+        }
+      }, { passive: true });
+    })();
+
     renderCalendar();
+
+    // Скролл к текущему дню при загрузке (мобайл)
+    (function scrollToToday() {
+      if (window.innerWidth > 600) return;
+      const dow = now.getDay();            // 0=Вс … 6=Сб
+      const colIndex = (dow + 6) % 7;     // Пн=0 … Вс=6
+      const colW = window.innerWidth / 2;
+      const wrap = document.querySelector('.cal-scroll-wrap');
+      if (wrap) wrap.scrollLeft = colIndex * colW;
+    })();
 
     let resizeTimerId;
     window.addEventListener('resize', () => {
