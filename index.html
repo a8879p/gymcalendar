@@ -46,8 +46,10 @@
         radial-gradient(ellipse 40% 30% at 10% 100%, rgba(59, 140, 255, 0.08) 0%, transparent 50%);
     }
 
-    .app {
-      padding: 1rem 1rem 0.5rem;
+    .wrapper {
+      width: 100%;
+      height: 100vh;
+      padding: 0.25rem 1rem 0.5rem;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -60,7 +62,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 2px;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       position: relative
     }
 
@@ -90,12 +92,12 @@
 
     .month-title {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 26px;
+      font-size: 20px;
       font-weight: 800;
       color: var(--txt);
-      min-width: 220px;
       letter-spacing: 0.02em;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .editor-btn {
@@ -357,8 +359,8 @@
       margin-bottom: 0px;
       display: inline-block;
       line-height: 1;
-      min-width: 14px;
-      text-align: center;
+      min-width: 0;
+      text-align: left;
     }
 
     .day.weekend .dnum {
@@ -1405,7 +1407,13 @@
   <script>
     const TM = window.Telegram?.WebApp;
     const isTg = !!TM?.initData;
-    if (isTg) { TM.expand(); TM.ready(); }
+    if (isTg) { 
+      TM.expand(); 
+      TM.ready(); 
+      if (typeof TM.requestFullscreen === 'function') {
+        try { TM.requestFullscreen(); } catch(e) {}
+      }
+    }
     const MONTHS = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     const PINNED = ['Приседания', 'Жим лёжа', 'Становая тяга'];
     const REST = ['Подтягивания', 'Жим стоя', 'Тяга штанги', 'Отжимания', 'Жим гантелей', 'Планка', 'Скручивания'];
@@ -1768,7 +1776,7 @@
         const dnum = document.createElement('span');
         dnum.className = 'dnum';
         if (isFirstOfMonth) {
-          dnum.innerHTML = `<span style="font-size:10px;color:var(--accent2);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;display:block;line-height:1.2">${MONTHS_SHORT[m]}</span>${d}`;
+          dnum.innerHTML = `<span style="font-size:10px;color:var(--accent2);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;display:inline-block;margin-right:4px;">${MONTHS_SHORT[m]}</span>${d}`;
         } else { dnum.textContent = d; }
         el.appendChild(dnum);
 
