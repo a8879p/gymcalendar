@@ -10,19 +10,12 @@
     href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    (function() {
-      const tg = window.Telegram.WebApp;
-      tg.ready();
-      tg.expand();
-    })();
-  </script>
   <style>
     :root {
       --bg: #0d0d12;
       --surface: #14141c;
       --surface2: #1c1c28;
-      --border: #252535;
+      --border: #1c1c1d;
       --border2: #2e2e42;
       --txt: #e8e8f4;
       --txt2: #9090b0;
@@ -53,12 +46,8 @@
         radial-gradient(ellipse 40% 30% at 10% 100%, rgba(59, 140, 255, 0.08) 0%, transparent 50%);
     }
 
-    .wrapper {
-      padding: 0.5rem 1rem 0.5rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      max-width: 100%;
+    .app {
+      padding-top: 70px;
     }
 
     /* ШАПКА */
@@ -1357,11 +1346,11 @@
         </div>
         <div class="stat-chip">
           <span class="stat-chip-label">Становая</span>
-          <span class="stat-chip-val highlight" id="recСтановая тяга">— кг</span>
+          <span class="stat-chip-val highlight" id="recСтановая_тяга">— кг</span>
         </div>
         <div class="stat-chip">
           <span class="stat-chip-label">Жим лёжа</span>
-          <span class="stat-chip-val highlight" id="recЖим лёжа">— кг</span>
+          <span class="stat-chip-val highlight" id="recЖим_лёжа">— кг</span>
         </div>
         <div class="stat-chip">
           <span class="stat-chip-label">Приседания</span>
@@ -1457,9 +1446,12 @@
   <script>
     const TM = window.Telegram?.WebApp;
     const isTg = !!TM?.initData;
-    if (isTg) { 
-      TM.expand(); 
-      TM.ready(); 
+    if (isTg) {
+      TM.ready();
+      TM.expand();
+      if (typeof TM.requestFullscreen === 'function') {
+        TM.requestFullscreen();
+      }
     }
     const MONTHS = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     const PINNED = ['Приседания', 'Жим лёжа', 'Становая тяга'];
@@ -1614,7 +1606,8 @@
     function renderHdrStats() {
       document.getElementById('valBodyweight').textContent = bodyweight != null ? `${bodyweight} кг` : '— кг';
       REC_EX.forEach(ex => {
-        const el = document.getElementById('rec' + ex);
+        const safeId = ex.replace(/ /g, '_');
+        const el = document.getElementById('rec' + safeId);
         if (el) el.textContent = records[ex] != null ? `${records[ex]} кг` : '— кг';
       });
     }
@@ -2088,7 +2081,8 @@
           if (ev.key === 'Enter') { inp.blur(); }
           if (ev.key === 'Escape') { 
             saved = true; // prevent blur from saving
-            tdWt.textContent = maxWt != null ? maxWt + ' кг' : '—'; 
+            tdWt.textContent = maxWt != null ? maxWt + ' кг' : '—';
+            inp.blur();
           }
           ev.stopPropagation();
         });
@@ -2124,7 +2118,8 @@
           if (ev.key === 'Enter') inp.blur(); 
           if (ev.key === 'Escape') { 
             saved = true; 
-            planEl.textContent = oldVal !== '' ? oldVal : '—'; 
+            planEl.textContent = oldVal !== '' ? oldVal : '—';
+            inp.blur();
           } 
           ev.stopPropagation(); 
         });
@@ -2207,7 +2202,7 @@
 
       persist(); loadDayData(); updateDayInCalendar(curDate);
     });
-    ['inPlan', 'inWt', 'inORM'].forEach(id => {
+    ['inPlan', 'inWt'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('addSetBtn').click(); });
     });
