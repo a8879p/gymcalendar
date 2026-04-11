@@ -15,7 +15,13 @@
       const tg = window.Telegram.WebApp;
       tg.ready();
       tg.expand();
-      if (tg.requestFullscreen) tg.requestFullscreen();
+    })();
+  </script>
+  <script>
+    (function() {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
     })();
   </script>
   <style>
