@@ -10,6 +10,14 @@
     href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    (function() {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+      if (tg.requestFullscreen) tg.requestFullscreen();
+    })();
+  </script>
   <style>
     :root {
       --bg: #0d0d12;
@@ -713,7 +721,7 @@
 
     .td-name {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 500;
       color: var(--txt);
       text-transform: uppercase;
@@ -1137,7 +1145,6 @@
       .workout-table th.th-name,
       .workout-table td.td-name {
         padding-right: 20px;
-        font-size: 16px;
       }
 
       .workout-table tbody td {
