@@ -15,7 +15,7 @@
       --bg: #0d0d12;
       --surface: #14141c;
       --surface2: #1c1c28;
-      --border: #1c1c1d;
+      --border: #252535;
       --border2: #2e2e42;
       --txt: #e8e8f4;
       --txt2: #9090b0;
@@ -1449,7 +1449,8 @@
     if (isTg) {
       TM.ready();
       TM.expand();
-      if (typeof TM.requestFullscreen === 'function') {
+      const desktopPlatforms = ['tdesktop', 'macos', 'web'];
+      if (typeof TM.requestFullscreen === 'function' && desktopPlatforms.includes(TM.platform)) {
         TM.requestFullscreen();
       }
     }
