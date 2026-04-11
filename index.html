@@ -1285,6 +1285,91 @@
       }
     }
 
+    /* ── Десктоп: компактная модалка ── */
+    @media(min-width: 601px) {
+      .modal-hdr {
+        padding: 12px 18px 10px;
+      }
+      .modal-hdr h2 {
+        font-size: 15px;
+      }
+      .modal-close {
+        width: 26px;
+        height: 26px;
+        font-size: 14px;
+      }
+      .modal-body {
+        padding: 12px 16px;
+      }
+      .input-bar {
+        padding: 8px 10px;
+        gap: 5px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+      }
+      .input-select {
+        font-size: 13px;
+        padding: 5px 4px;
+      }
+      .input-label {
+        font-size: 11px;
+        width: 70px;
+      }
+      .input-num {
+        font-size: 14px;
+        padding: 5px 8px;
+        width: 64px;
+        height: 30px;
+      }
+      .add-btn {
+        font-size: 12px;
+        padding: 6px 14px;
+      }
+      .workout-table thead th {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+      .workout-table tbody td {
+        padding: 6px 10px;
+      }
+      .td-name {
+        font-size: 13px;
+      }
+      .td-weight {
+        font-size: 13px;
+      }
+      .td-pct {
+        font-size: 12px;
+      }
+      .set-cell {
+        min-width: 28px;
+        height: 28px;
+        font-size: 14px;
+        border-radius: 6px;
+      }
+      .set-cell-wrap {
+        min-width: 50px;
+        height: 28px;
+        padding: 0 4px;
+        gap: 2px;
+        border-radius: 6px;
+      }
+      .set-plan {
+        font-size: 13px;
+      }
+      .set-sep {
+        font-size: 11px;
+      }
+      .set-fact {
+        font-size: 13px;
+        width: 24px;
+      }
+      .ex-cards-empty {
+        padding: 20px;
+        font-size: 13px;
+      }
+    }
+
     /* loaders */
     .cs-loader {
       position: fixed;
@@ -1346,15 +1431,15 @@
         </div>
         <div class="stat-chip">
           <span class="stat-chip-label">Становая</span>
-          <span class="stat-chip-val highlight" id="recСтановая_тяга">— кг</span>
+          <span class="stat-chip-val highlight" id="rec-stanovaya">— кг</span>
         </div>
         <div class="stat-chip">
           <span class="stat-chip-label">Жим лёжа</span>
-          <span class="stat-chip-val highlight" id="recЖим_лёжа">— кг</span>
+          <span class="stat-chip-val highlight" id="rec-zhim">— кг</span>
         </div>
         <div class="stat-chip">
           <span class="stat-chip-label">Приседания</span>
-          <span class="stat-chip-val highlight" id="recПриседания">— кг</span>
+          <span class="stat-chip-val highlight" id="rec-prisedaniya">— кг</span>
         </div>
       </div>
     </div>
@@ -1603,12 +1688,15 @@
     limitNum(document.getElementById('inWt'));
     limitNum(document.getElementById('inORM'));
 
-    const REC_EX = ['Становая тяга', 'Жим лёжа', 'Приседания'];
+    const REC_EX = [
+      { ex: 'Становая тяга', id: 'rec-stanovaya' },
+      { ex: 'Жим лёжа',      id: 'rec-zhim'      },
+      { ex: 'Приседания',    id: 'rec-prisedaniya' }
+    ];
     function renderHdrStats() {
       document.getElementById('valBodyweight').textContent = bodyweight != null ? `${bodyweight} кг` : '— кг';
-      REC_EX.forEach(ex => {
-        const safeId = ex.replace(/ /g, '_');
-        const el = document.getElementById('rec' + safeId);
+      REC_EX.forEach(({ ex, id }) => {
+        const el = document.getElementById(id);
         if (el) el.textContent = records[ex] != null ? `${records[ex]} кг` : '— кг';
       });
     }
