@@ -25,7 +25,8 @@
       --yellow:   #ffd000;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0 }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    input, textarea { -webkit-user-select: text; user-select: text; }
 
     body {
       font-family: 'Barlow', sans-serif;
@@ -300,6 +301,8 @@
       overflow: hidden;
       position: relative;
       transition: background 0.1s;
+      user-select: none;
+      -webkit-user-select: none;
     }
     .day:nth-child(7n) { border-right: none }
 
@@ -777,8 +780,9 @@
     }
     .day.copied .dnum { color: var(--accent2) }
 
-    .day.paste-hint {
-      box-shadow: inset 0 0 0 1.5px var(--green);
+    .day.paste-hint:hover {
+      box-shadow: inset 0 0 0 2px var(--green), 0 0 8px rgba(0,229,122,.2);
+      background: rgba(0,229,122,.05) !important;
     }
 
     #dayCtxMenu { min-width: 200px }
@@ -1208,6 +1212,7 @@
     let dirtyDates       = new Set();
     let persistTimer     = null;
     let curDate          = null;
+    let copiedDate       = null;
 
     // ── DOM-кэш ──
     const $ = id => document.getElementById(id);
@@ -1226,6 +1231,7 @@
     const elEdInput       = $('edInput');
     const elOverflowPop   = $('overflowPop');
     const elCalGrid       = $('calGrid');
+    const elDayCtx        = $('dayCtxMenu');
 
     // ── Миграция старого формата ──
     try {
@@ -1537,7 +1543,21 @@
         el.appendChild(dnum);
 
         renderDayChips(el, k, workouts[k] || []);
-        el.addEventListener('click', () => openDay(k));
+        el.addEventListener('click', e => {
+          // Если открыто контекстное меню дня — закрываем его, модалку не открываем
+          if (elDayCtx.classList.contains('open')) {
+            elDayCtx.classList.remove('open');
+            e.stopPropagation();
+            return;
+          }
+          // Если активен режим копирования — отменяем его, модалку не открываем
+          if (copiedDate) {
+            cancelCopy();
+            e.stopPropagation();
+            return;
+          }
+          openDay(k);
+        });
         elCalGrid.appendChild(el);
       }
 
@@ -1657,7 +1677,7 @@
           elEditorDrop.classList.remove('open');
         });
         div.addEventListener('contextmenu', e => {
-          e.preventDefault(); e.stopPropagation();
+          e.stopPropagation();
           selEx = ex;
           elExListbox.querySelectorAll('.ex-listbox-item').forEach(d => d.classList.remove('sel'));
           div.classList.add('sel');
@@ -2012,13 +2032,33 @@
       inp.className = 'set-fact' + (done ? ' fact-done' : fail ? ' fact-fail' : '');
     }
 
-    // Контекстное меню таблицы
+    // Контекстное меню таблицы (десктоп — ПКМ)
     elTableWrap.addEventListener('contextmenu', e => {
       const wrap = e.target.closest('.set-cell-wrap');
-      if (wrap) { e.preventDefault(); showCtxMenu(e, { ex: wrap.dataset.ex, setId: parseInt(wrap.dataset.setId) }); return; }
+      if (wrap) { showCtxMenu(e, { ex: wrap.dataset.ex, setId: parseInt(wrap.dataset.setId) }); return; }
       const name = e.target.closest('.td-name');
-      if (name) { e.preventDefault(); showCtxMenu(e, { ex: name.textContent.trim(), setId: null }); }
+      if (name) { showCtxMenu(e, { ex: name.textContent.trim(), setId: null }); }
     });
+
+    // Long press в таблице (мобайл)
+    let twLpTimer = null, twLpMoved = false;
+    elTableWrap.addEventListener('touchstart', e => {
+      const wrap = e.target.closest('.set-cell-wrap');
+      const name = e.target.closest('.td-name');
+      if (!wrap && !name) return;
+      twLpMoved = false;
+      const touch = e.touches[0];
+      twLpTimer = setTimeout(() => {
+        if (twLpMoved) return;
+        const fakeE = { clientX: touch.clientX, clientY: touch.clientY };
+        if (wrap) showCtxMenu(fakeE, { ex: wrap.dataset.ex, setId: parseInt(wrap.dataset.setId) });
+        else      showCtxMenu(fakeE, { ex: name.textContent.trim(), setId: null });
+      }, 500);
+    }, { passive: true });
+
+    elTableWrap.addEventListener('touchmove',   () => { twLpMoved = true; clearTimeout(twLpTimer); }, { passive: true });
+    elTableWrap.addEventListener('touchend',    () => clearTimeout(twLpTimer), { passive: true });
+    elTableWrap.addEventListener('touchcancel', () => clearTimeout(twLpTimer), { passive: true });
 
     let ctxTarget = { ex: null, setId: null };
     function showCtxMenu(e, target) {
@@ -2054,8 +2094,6 @@
     $('nextBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() + 7); renderCalendar(); });
 
     // ── Копирование / вставка тренировки ──
-    let copiedDate   = null;
-    const elDayCtx   = $('dayCtxMenu');
     const elDCtxCopy = $('dayCtxCopy');
     const elDCtxPaste  = $('dayCtxPaste');
     const elDCtxCancel = $('dayCtxCancel');
@@ -2169,7 +2207,6 @@
     elCalGrid.addEventListener('contextmenu', e => {
       const dayEl = e.target.closest('.day');
       if (!dayEl) return;
-      e.preventDefault();
       const dateKey = dayEl.id.replace('day-', '');
       showDayCtxMenu(e, dateKey);
     });
@@ -2191,6 +2228,9 @@
     elCalGrid.addEventListener('touchmove',  () => { lpMoved = true; clearTimeout(lpTimer); }, { passive: true });
     elCalGrid.addEventListener('touchend',   () => clearTimeout(lpTimer), { passive: true });
     elCalGrid.addEventListener('touchcancel',() => clearTimeout(lpTimer), { passive: true });
+
+    // ── Блокировка стандартного браузерного контекстного меню ──
+    document.addEventListener('contextmenu', e => e.preventDefault());
 
     // ── Единый глобальный обработчик кликов для закрытия попапов ──
     document.addEventListener('click', e => {
