@@ -1750,19 +1750,17 @@
       const ex = elExSelect.value;
       const v  = parseFloat(elInORM.value);
       if (!isNaN(v) && v > 0) {
-         if (confirm(`Установить ${v} кг как новый 1ПМ для упражнения "${ex}"?`)) {
-            records[ex] = { weight: v, date: curDate };
-            persist(); renderHdrStats();
-         } else {
-            syncORM(); // Отмена, возвращаем старое значение
-         }
+         records[ex] = { weight: v, date: curDate };
+         persist(); 
+         renderHdrStats();
+         if (curDate) loadDayData();
       } else if (elInORM.value === '') {
-         if (confirm(`Удалить 1ПМ для упражнения "${ex}"?`)) {
-            delete records[ex];
-            persist(); renderHdrStats();
-         } else {
-            syncORM();
-         }
+         delete records[ex];
+         persist(); 
+         renderHdrStats();
+         if (curDate) loadDayData();
+      } else {
+         syncORM();
       }
     });
 
