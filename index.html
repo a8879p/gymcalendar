@@ -1122,7 +1122,7 @@
           <div style="display:flex;gap:8px;align-items:center;position:relative">
             <select class="input-select" id="exSelect" style="flex:1;margin:0"></select>
             <span style="color:var(--accent2);font-size:11px;font-weight:700;flex-shrink:0;margin-left:auto;text-transform:uppercase;letter-spacing:0.04em">1ПМ</span>
-            <input class="input-num" id="inORM" type="number" min="0" max="9999" step="0.5" placeholder="кг"
+            <input class="input-num" id="inORM" type="number" inputmode="decimal" min="0" max="9999" step="0.5" placeholder="кг"
               style="color:var(--accent2);flex-shrink:0">
             <div class="editor-drop" id="editorDrop">
               <div class="editor-drop-handle" id="editorDropHandle"></div>
@@ -1139,11 +1139,11 @@
           </div>
           <div class="input-row">
             <span class="input-label">Вес (кг)</span>
-            <input class="input-num" id="inWt" type="number" min="0" max="9999" step="0.5" placeholder="0">
+            <input class="input-num" id="inWt" type="number" inputmode="decimal" min="0" max="9999" step="0.5" placeholder="0">
           </div>
           <div class="input-row">
             <span class="input-label">Повторения</span>
-            <input class="input-num" id="inPlan" type="number" min="1" max="999" step="1" placeholder="12">
+            <input class="input-num" id="inPlan" type="number" inputmode="numeric" min="1" max="999" step="1" placeholder="12">
             <button class="add-btn" id="addSetBtn">Добавить</button>
           </div>
         </div>
@@ -1382,7 +1382,7 @@
       const valEl = $('valBodyweight');
       if (valEl.tagName === 'INPUT') return;
       const inp = document.createElement('input');
-      inp.className = 'chip-input'; inp.type = 'number'; inp.min = 0; inp.max = 999; inp.step = 0.1;
+      inp.className = 'chip-input'; inp.type = 'number'; inp.inputMode = 'decimal'; inp.min = 0; inp.max = 999; inp.step = 0.1;
       inp.value = bodyweight || ''; inp.placeholder = 'кг';
       valEl.replaceWith(inp); inp.focus(); inp.select();
       function save() {
@@ -1886,7 +1886,7 @@
             const done = s.fact != null && s.plan != null && s.fact >= s.plan;
             const fail = s.fact != null && s.plan != null && s.fact <  s.plan;
             factEl.className = 'set-fact' + (done ? ' fact-done' : fail ? ' fact-fail' : '');
-            factEl.type = 'number'; factEl.min = '0'; factEl.max = 999;
+            factEl.type = 'number'; factEl.inputMode = 'numeric'; factEl.min = '0'; factEl.max = 999;
             factEl.value = s.fact != null ? s.fact : '';
             factEl.placeholder = '—';
             factEl.dataset.setId = s.id;
@@ -1928,7 +1928,7 @@
         const maxWt = ws.length ? Math.max(...ws) : null;
 
         const inp = document.createElement('input');
-        inp.className = 'td-weight-input'; inp.type = 'number'; inp.min = 0; inp.max = 9999; inp.step = 0.5;
+        inp.className = 'td-weight-input'; inp.type = 'number'; inp.inputMode = 'decimal'; inp.min = 0; inp.max = 9999; inp.step = 0.5;
         inp.value = maxWt != null ? maxWt : ''; inp.placeholder = 'кг';
         tdWt.textContent = ''; tdWt.appendChild(inp);
         inp.focus(); inp.select();
@@ -1966,7 +1966,7 @@
         if (!s) return;
         const oldVal = s.plan != null ? s.plan : '';
         const inp = document.createElement('input');
-        inp.type = 'number'; inp.min = 0; inp.max = 999;
+        inp.type = 'number'; inp.inputMode = 'numeric'; inp.min = 0; inp.max = 999;
         inp.style.cssText = 'width:28px;border:none;background:transparent;font-family:"Barlow Condensed",sans-serif;font-size:14px;font-weight:700;color:var(--accent);outline:none;text-align:center;padding:0;border-bottom:1px solid var(--accent)';
         inp.value = oldVal; inp.placeholder = '—';
         planEl.textContent = ''; planEl.appendChild(inp);
