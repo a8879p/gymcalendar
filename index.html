@@ -1077,15 +1077,15 @@
           <span class="stat-chip-label">Вес атлета</span>
           <span class="stat-chip-val" id="valBodyweight">— кг</span>
         </div>
-        <div class="stat-chip">
+        <div class="stat-chip" id="chip-rec-stanovaya" title="Нажми чтобы изменить">
           <span class="stat-chip-label">Становая</span>
           <span class="stat-chip-val highlight" id="rec-stanovaya">— кг</span>
         </div>
-        <div class="stat-chip">
-          <span class="stat-chip-label">Жим лёжа</span>
+        <div class="stat-chip" id="chip-rec-zhim" title="Нажми чтобы изменить">
+          <span class="stat-chip-label">Жим лежа</span>
           <span class="stat-chip-val highlight" id="rec-zhim">— кг</span>
         </div>
-        <div class="stat-chip">
+        <div class="stat-chip" id="chip-rec-prisedaniya" title="Нажми чтобы изменить">
           <span class="stat-chip-label">Приседания</span>
           <span class="stat-chip-val highlight" id="rec-prisedaniya">— кг</span>
         </div>
@@ -1202,13 +1202,13 @@
     const MONTHS       = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
     const MONTHS_SHORT = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
     const DAYS_RU      = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-    const PINNED       = ['Приседания','Жим лёжа','Становая тяга'];
+    const PINNED       = ['Приседания','Жим лежа','Становая тяга'];
     const REST         = ['Подтягивания','Жим стоя','Тяга штанги','Отжимания','Жим гантелей','Планка','Скручивания'];
     const WEEKS        = 4;
 
     const REC_EX = [
       { ex: 'Становая тяга', id: 'rec-stanovaya' },
-      { ex: 'Жим лёжа',     id: 'rec-zhim'       },
+      { ex: 'Жим лежа',     id: 'rec-zhim'       },
       { ex: 'Приседания',   id: 'rec-prisedaniya' }
     ];
 
@@ -1270,7 +1270,13 @@
       try { const s = localStorage.getItem('gd_meta'); if (s) nextId     = JSON.parse(s).nextId || 1; } catch(e) {}
       try { const s = localStorage.getItem('gd_ex2');  if (s) exercises  = JSON.parse(s); } catch(e) {}
       try { const s = localStorage.getItem('gd_bw');   if (s) bodyweight = parseFloat(s); } catch(e) {}
-      try { const s = localStorage.getItem('gd_rec');  if (s) records    = JSON.parse(s); } catch(e) {}
+      try { 
+        const s = localStorage.getItem('gd_rec');  
+        if (s) {
+          records = JSON.parse(s); 
+          if(records['Жим лёжа']) { records['Жим лежа'] = records['Жим лёжа']; delete records['Жим лёжа']; }
+        }
+      } catch(e) {}
     }
     initLocalData();
 
@@ -1408,6 +1414,37 @@
       inp.addEventListener('keydown', e => {
         if (e.key === 'Enter') inp.blur();
         if (e.key === 'Escape') { inp.value = ''; inp.blur(); }
+      });
+    });
+
+    // Инлайн-редактирование рекордов
+    REC_EX.forEach(({ ex, id }) => {
+      const chipId = 'chip-' + id;
+      const chipEl = $(chipId);
+      if (!chipEl) return;
+      chipEl.addEventListener('click', () => {
+        const valEl = $(id);
+        if (!valEl || valEl.tagName === 'INPUT') return;
+        const inp = document.createElement('input');
+        inp.className = 'chip-input'; inp.type = 'number'; inp.inputMode = 'decimal'; inp.min = 0; inp.max = 999; inp.step = 0.5;
+        inp.value = records[ex] || ''; inp.placeholder = 'кг';
+        valEl.replaceWith(inp); inp.focus(); inp.select();
+        function save() {
+          const v = parseFloat(inp.value);
+          if (!isNaN(v) && v > 0) records[ex] = v; else delete records[ex];
+          persist(); renderHdrStats();
+          // восстановить span
+          const span = document.createElement('span');
+          span.id = id; span.className = 'stat-chip-val highlight';
+          span.textContent = records[ex] != null ? `${records[ex]} кг` : '— кг';
+          inp.replaceWith(span);
+          syncORM(); // обновить в модалке, если она открыта
+        }
+        inp.addEventListener('blur', save);
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Enter') inp.blur();
+          if (e.key === 'Escape') { inp.value = records[ex] || ''; inp.blur(); }
+        });
       });
     });
 
@@ -2102,6 +2139,30 @@
     // Навигация
     $('prevBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() - 7); renderCalendar(); });
     $('nextBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() + 7); renderCalendar(); });
+
+    // Свайп по календарю (влево-вправо)
+    (function() {
+      const wrap = document.querySelector('.cal-scroll-wrap');
+      if (!wrap) return;
+      let startX = 0, startY = 0;
+      wrap.addEventListener('touchstart', e => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      }, { passive: true });
+      wrap.addEventListener('touchend', e => {
+        if (!startX) return;
+        const diffX = startX - e.changedTouches[0].clientX;
+        const diffY = startY - e.changedTouches[0].clientY;
+        if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY)) {
+          if (diffX > 0 && wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 10) {
+            $('nextBtn').click(); // свайп влево -> след. период
+          } else if (diffX < 0 && wrap.scrollLeft <= 10) {
+            $('prevBtn').click(); // свайп вправо -> пред. период
+          }
+        }
+        startX = 0;
+      }, { passive: true });
+    })();
 
     // ── Копирование / вставка тренировки ──
     const elDCtxCopy = $('dayCtxCopy');
