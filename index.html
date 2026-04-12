@@ -203,8 +203,12 @@
 
     .ex-listbox-item {
       padding: 9px 12px;
-      font-size: 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
       color: var(--txt);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
       cursor: pointer;
       border-bottom: 1px solid var(--border);
       transition: background 0.15s;
@@ -499,13 +503,15 @@
       border: 1px solid var(--border2);
       border-radius: 8px;
       padding: 8px 4px;
-      font-size: 15px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
       font-weight: 600;
-      background: var(--surface2);
       color: var(--txt);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      background: var(--surface2);
       outline: none;
       cursor: pointer;
-      font-family: 'Barlow', sans-serif;
       transition: border-color 0.15s;
     }
     .input-select:focus { border-color: var(--accent); box-shadow: none; }
@@ -895,15 +901,19 @@
 
       .hdr {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-        margin-bottom: 6px;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 10px;
         padding: 0 0.6rem;
       }
+      .hdr-nav {
+         width: 100%;
+         justify-content: space-between;
+      }
+      .month-title { font-size: 20px; text-align: center; flex: 1; }
+      .nav-btn { font-size: 24px; padding: 6px 16px; }
 
-      .month-title { font-size: 20px; min-width: 0 }
-
-      .hdr-stats { padding: 0 0.6rem; gap: 4px }
+      .hdr-stats { padding: 0 0.6rem; gap: 4px; justify-content: center; }
 
       .stat-chip {
         flex-direction: column;
@@ -1052,6 +1062,7 @@
       .workout-table thead th { padding: 6px 10px; font-size: 11px }
       .workout-table tbody td { padding: 6px 10px }
       .td-name          { font-size: 13px }
+      .ex-listbox-item  { font-size: 13px }
       .td-weight        { font-size: 13px }
       .td-pct           { font-size: 12px }
       .set-cell         { min-width: 28px; height: 28px; font-size: 14px; border-radius: 6px }
@@ -1275,8 +1286,25 @@
         if (s) {
           records = JSON.parse(s); 
           if(records['Жим лёжа']) { records['Жим лежа'] = records['Жим лёжа']; delete records['Жим лёжа']; }
+          // Migrate old numeric records to object struct
+          for(let k in records) {
+             if (typeof records[k] === 'number') records[k] = { weight: records[k], date: null };
+          }
         }
       } catch(e) {}
+      // Populate missing dates for records by searching setsByDate
+      for(let k in records) {
+         if (records[k] && !records[k].date) {
+            let foundDate = null;
+            for (let d in setsByDate) {
+               if (setsByDate[d].some(s => s.exercise === k && s.fact === 1 && s.weight === records[k].weight)) {
+                  foundDate = d;
+                  break;
+               }
+            }
+            if (foundDate) records[k].date = foundDate;
+         }
+      }
     }
     initLocalData();
 
@@ -1388,7 +1416,9 @@
       $('valBodyweight').textContent = bodyweight != null ? `${bodyweight} кг` : '— кг';
       REC_EX.forEach(({ ex, id }) => {
         const el = $(id);
-        if (el) el.textContent = records[ex] != null ? `${records[ex]} кг` : '— кг';
+        const rec = records[ex];
+        const w = (rec !== null && typeof rec === 'object' && rec.weight) ? rec.weight : (typeof rec === 'number' ? rec : null);
+        if (el) el.textContent = w != null ? `${w} кг` : '— кг';
       });
     }
     renderHdrStats();
@@ -1417,34 +1447,33 @@
       });
     });
 
-    // Инлайн-редактирование рекордов
+    // Клик по рекорду
     REC_EX.forEach(({ ex, id }) => {
       const chipId = 'chip-' + id;
       const chipEl = $(chipId);
       if (!chipEl) return;
       chipEl.addEventListener('click', () => {
-        const valEl = $(id);
-        if (!valEl || valEl.tagName === 'INPUT') return;
-        const inp = document.createElement('input');
-        inp.className = 'chip-input'; inp.type = 'number'; inp.inputMode = 'decimal'; inp.min = 0; inp.max = 999; inp.step = 0.5;
-        inp.value = records[ex] || ''; inp.placeholder = 'кг';
-        valEl.replaceWith(inp); inp.focus(); inp.select();
-        function save() {
-          const v = parseFloat(inp.value);
-          if (!isNaN(v) && v > 0) records[ex] = v; else delete records[ex];
-          persist(); renderHdrStats();
-          // восстановить span
-          const span = document.createElement('span');
-          span.id = id; span.className = 'stat-chip-val highlight';
-          span.textContent = records[ex] != null ? `${records[ex]} кг` : '— кг';
-          inp.replaceWith(span);
-          syncORM(); // обновить в модалке, если она открыта
+        const rec = records[ex];
+        if (rec && rec.date) {
+           const parts = rec.date.split('-');
+           const dObj  = new Date(parts[0], parts[1]-1, parts[2]);
+           anchorMonday = getMondayOf(dObj);
+           renderCalendar();
+           const dayEl = $('day-' + rec.date);
+           if (dayEl) {
+              const exChip = Array.from(dayEl.querySelectorAll('.day-chip')).find(c => c.dataset.ex === ex);
+              if (exChip) {
+                 document.querySelectorAll('.day-chip').forEach(d => d.style.boxShadow = '');
+                 exChip.style.boxShadow = 'inset 4px 0 0 var(--accent)';
+                 setTimeout(() => { if (exChip) exChip.style.boxShadow = ''; }, 2000);
+              }
+           }
+        } else {
+           if (!elMbg.classList.contains('open')) {
+              anchorMonday = getMondayOf(now);
+              renderCalendar();
+           }
         }
-        inp.addEventListener('blur', save);
-        inp.addEventListener('keydown', e => {
-          if (e.key === 'Enter') inp.blur();
-          if (e.key === 'Escape') { inp.value = records[ex] || ''; inp.blur(); }
-        });
       });
     });
 
@@ -1485,7 +1514,8 @@
           }
           return `<span class="chip-set-val" style="${style}">${v}</span>`;
         }).join('');
-        const pctRatio = records[ex] != null && maxWt > 0 ? maxWt / records[ex] : null;
+        const curRecWt = records[ex] ? (typeof records[ex] === 'object' ? records[ex].weight : records[ex]) : null;
+        const pctRatio = curRecWt != null && maxWt > 0 ? maxWt / curRecWt : null;
         const wtColor  = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt)';
         const weightHTML = maxWt > 0
           ? `<span style="color:${wtColor}">${maxWt}</span><span style="font-size:13px;color:var(--txt3);margin:0 0 0 1px;font-family:'Barlow',sans-serif">×</span>`
@@ -1527,6 +1557,7 @@
       exList.slice(0, showCount).forEach((item, idx) => {
         const chip = document.createElement('span');
         chip.className = 'day-chip' + (idx === 0 ? ' main' : '');
+        chip.dataset.ex = item.label;
         chip.innerHTML = `<span class="chip-label">${item.label}</span><div class="chip-metrics">${item.weight ? `<span class="chip-weight">${item.weight}</span>` : ''}<span class="chip-sets">${item.sets}</span></div>`;
         chip.addEventListener('click', e => { e.stopPropagation(); openDay(k, item.label); });
         el.appendChild(chip);
@@ -1690,20 +1721,49 @@
 
     function syncORM() {
       const ex = elExSelect.value;
-      elInORM.value = records[ex] != null ? records[ex] : '';
+      const rec = records[ex];
+      const curRecWt = (rec && typeof rec === 'object' && rec.weight) ? rec.weight : (typeof rec === 'number' ? rec : null);
+      elInORM.value = curRecWt != null ? curRecWt : '';
+    }
+
+    // ── Helper для проверки и сохранения рекордов ──
+    function checkNewRecord(ex) {
+      if (!REC_EX.some(r => r.ex === ex)) return;
+      const exSets = (setsByDate[curDate] || []).filter(sx => sx.exercise === ex);
+      const validWeights = exSets.filter(sx => sx.fact >= 1 && sx.plan === 1 && sx.weight > 0).map(sx => parseFloat(sx.weight));
+      if (!validWeights.length) return;
+      const maxWt = Math.max(...validWeights);
+      const rec = records[ex];
+      const curRecWt = (rec && typeof rec === 'object' && rec.weight) ? rec.weight : (typeof rec === 'number' ? rec : 0);
+      
+      if (maxWt > curRecWt) {
+         records[ex] = { weight: maxWt, date: curDate };
+         persist();
+         renderHdrStats();
+         syncORM();
+      }
     }
 
     elExSelect.addEventListener('change', syncORM);
 
-    let ormTimer = null;
-    elInORM.addEventListener('input', () => {
-      clearTimeout(ormTimer);
-      ormTimer = setTimeout(() => {
-        const ex = elExSelect.value;
-        const v  = parseFloat(elInORM.value);
-        if (!isNaN(v) && v > 0) records[ex] = v; else delete records[ex];
-        persist(); renderHdrStats();
-      }, 500);
+    elInORM.addEventListener('change', () => {
+      const ex = elExSelect.value;
+      const v  = parseFloat(elInORM.value);
+      if (!isNaN(v) && v > 0) {
+         if (confirm(`Установить ${v} кг как новый 1ПМ для упражнения "${ex}"?`)) {
+            records[ex] = { weight: v, date: curDate };
+            persist(); renderHdrStats();
+         } else {
+            syncORM(); // Отмена, возвращаем старое значение
+         }
+      } else if (elInORM.value === '') {
+         if (confirm(`Удалить 1ПМ для упражнения "${ex}"?`)) {
+            delete records[ex];
+            persist(); renderHdrStats();
+         } else {
+            syncORM();
+         }
+      }
     });
 
     // ── Листбокс упражнений в дропдауне ──
@@ -1793,7 +1853,7 @@
       if (!exercises.includes(v)) {
         exercises.push(v);
         persist(); buildExSelect(); renderExListbox();
-        elExSelect.value = v; syncORM();
+        elExSelect.value = v;
       }
       elEdInputRow.style.display = 'none';
       elEditorDrop.classList.remove('open');
@@ -1868,7 +1928,8 @@
         const exSets  = daySet.filter(s => s.exercise === ex).sort((a,b) => a.set_number - b.set_number);
         const maxWt   = Math.max(...exSets.map(s => parseFloat(s.weight) || 0));
         const weight  = maxWt > 0 ? maxWt : null;
-        const pctRatio = records[ex] != null && weight != null ? weight / records[ex] : null;
+        const curRecWt = records[ex] ? (typeof records[ex] === 'object' ? records[ex].weight : records[ex]) : null;
+        const pctRatio = curRecWt != null && weight != null ? weight / curRecWt : null;
         const pct      = pctRatio != null ? Math.round(pctRatio * 100) + '%' : '—';
         const pctColor = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt3)';
 
@@ -1987,13 +2048,15 @@
           const newWt = isNaN(v) ? null : v;
           (setsByDate[curDate] || []).filter(s => s.exercise === ex).forEach(s => s.weight = newWt);
           tdWt.textContent = newWt != null ? newWt + ' кг' : '—';
-          const pctRatio = records[ex] != null && newWt != null ? newWt / records[ex] : null;
+          const curRecWt = records[ex] ? (typeof records[ex] === 'object' ? records[ex].weight : records[ex]) : null;
+          const pctRatio = curRecWt != null && newWt != null ? newWt / curRecWt : null;
           const tdPct = tr.querySelector('.td-pct');
           if (tdPct) {
             tdPct.style.color = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt3)';
             tdPct.textContent = pctRatio != null ? Math.round(pctRatio * 100) + '%' : '—';
           }
           persist(); updateDayInCalendar(curDate);
+          checkNewRecord(ex);
         }
         inp.addEventListener('blur', saveWt);
         inp.addEventListener('keydown', ev => {
@@ -2065,6 +2128,7 @@
         s.fact = inp.value !== '' ? parseInt(inp.value) : null;
         updateFactColors(s, inp);
         persist(); updateDayInCalendar(curDate);
+        checkNewRecord(s.exercise);
       }, 400);
     });
 
@@ -2139,30 +2203,6 @@
     // Навигация
     $('prevBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() - 7); renderCalendar(); });
     $('nextBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() + 7); renderCalendar(); });
-
-    // Свайп по календарю (влево-вправо)
-    (function() {
-      const wrap = document.querySelector('.cal-scroll-wrap');
-      if (!wrap) return;
-      let startX = 0, startY = 0;
-      wrap.addEventListener('touchstart', e => {
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-      }, { passive: true });
-      wrap.addEventListener('touchend', e => {
-        if (!startX) return;
-        const diffX = startX - e.changedTouches[0].clientX;
-        const diffY = startY - e.changedTouches[0].clientY;
-        if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY)) {
-          if (diffX > 0 && wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 10) {
-            $('nextBtn').click(); // свайп влево -> след. период
-          } else if (diffX < 0 && wrap.scrollLeft <= 10) {
-            $('prevBtn').click(); // свайп вправо -> пред. период
-          }
-        }
-        startX = 0;
-      }, { passive: true });
-    })();
 
     // ── Копирование / вставка тренировки ──
     const elDCtxCopy = $('dayCtxCopy');
