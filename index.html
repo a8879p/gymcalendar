@@ -29,7 +29,10 @@
     *:focus { outline: none !important; box-shadow: none !important; -webkit-tap-highlight-color: transparent; }
     *:focus-visible { outline: none !important; box-shadow: none !important; }
     input:focus, input:focus-visible, select:focus, select:focus-visible, button:focus, button:focus-visible { outline: none !important; box-shadow: none !important; }
-    input, textarea { -webkit-user-select: text; user-select: text; }
+    input, textarea { -webkit-user-select: text; user-select: text; caret-color: var(--accent); }
+    ::selection { background: rgba(255, 79, 0, 0.4); color: inherit; }
+    ::-moz-selection { background: rgba(255, 79, 0, 0.4); color: inherit; }
+    input:-webkit-autofill, input:-webkit-autofill:focus { transition: background-color 5000s ease-in-out 0s; -webkit-text-fill-color: var(--txt) !important; }
 
     body {
       font-family: 'Barlow', sans-serif;
@@ -698,11 +701,14 @@
       font-weight: 500;
       color: var(--txt2);
       outline: none;
+      box-shadow: none;
+      -webkit-appearance: none;
+      appearance: none;
       text-align: center;
       padding: 0;
     }
     .set-fact::placeholder { color: var(--txt3); font-weight: 400 }
-    .set-fact:focus { box-shadow: none; }
+    .set-fact:focus { outline: none; box-shadow: none; }
     .set-fact.fact-done { color: var(--green) }
     .set-fact.fact-fail { color: var(--red) }
 
@@ -716,29 +722,24 @@
       outline: none;
       box-shadow: none;
       -webkit-appearance: none;
+      appearance: none;
       width: 60px;
       text-align: center;
-      border-bottom: 1.5px solid var(--accent);
       padding: 0;
     }
-    .td-weight-input:focus { outline: none; box-shadow: none; }
 
     /* Убираем стрелки у всех number-полей одним блоком */
-    .input-num::-webkit-inner-spin-button,
-    .input-num::-webkit-outer-spin-button,
-    .set-fact::-webkit-inner-spin-button,
-    .set-fact::-webkit-outer-spin-button,
-    .td-weight-input::-webkit-inner-spin-button,
-    .td-weight-input::-webkit-outer-spin-button,
-    .chip-input::-webkit-inner-spin-button,
-    .chip-input::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none !important;
+      appearance: none !important;
+      display: none !important;
+      margin: 0 !important;
     }
-    .input-num,
-    .set-fact,
-    .td-weight-input,
-    .chip-input { -moz-appearance: textfield }
+    input[type="number"] {
+      -moz-appearance: textfield !important;
+      appearance: none !important;
+    }
 
     .ex-cards-empty {
       text-align: center;
@@ -1976,7 +1977,7 @@
         const oldVal = s.plan != null ? s.plan : '';
         const inp = document.createElement('input');
         inp.type = 'number'; inp.inputMode = 'numeric'; inp.min = 0; inp.max = 999;
-        inp.style.cssText = 'width:28px;border:none;background:transparent;font-family:"Barlow Condensed",sans-serif;font-size:14px;font-weight:700;color:var(--accent);outline:none;text-align:center;padding:0;border-bottom:1px solid var(--accent)';
+        inp.style.cssText = 'width:28px;border:none;background:transparent;font-family:"Barlow Condensed",sans-serif;font-size:14px;font-weight:700;color:var(--accent);outline:none;box-shadow:none;-webkit-appearance:none;appearance:none;text-align:center;padding:0;';
         inp.value = oldVal; inp.placeholder = '—';
         planEl.textContent = ''; planEl.appendChild(inp);
         inp.focus(); inp.select();
