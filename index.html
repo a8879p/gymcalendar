@@ -26,6 +26,9 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    *:focus { outline: none !important; box-shadow: none !important; -webkit-tap-highlight-color: transparent; }
+    *:focus-visible { outline: none !important; box-shadow: none !important; }
+    input:focus, input:focus-visible, select:focus, select:focus-visible, button:focus, button:focus-visible { outline: none !important; box-shadow: none !important; }
     input, textarea { -webkit-user-select: text; user-select: text; }
 
     body {
@@ -140,11 +143,13 @@
       color: var(--txt);
       font-size: 16px;
       outline: none;
+      box-shadow: none;
       text-align: center;
       padding: 0 2px;
       font-family: 'Barlow Condensed', sans-serif;
       font-weight: 500;
     }
+    .chip-input:focus { box-shadow: none; }
 
     /* ── РЕДАКТОР ДРОПДАУН ── */
     .editor-drop {
@@ -234,7 +239,7 @@
       outline: none;
       font-family: 'Barlow', sans-serif;
     }
-    .editor-input:focus { border-color: var(--accent) }
+    .editor-input:focus { border-color: var(--accent); box-shadow: none; }
 
     .editor-input-ok {
       background: var(--accent);
@@ -500,7 +505,7 @@
       font-family: 'Barlow', sans-serif;
       transition: border-color 0.15s;
     }
-    .input-select:focus { border-color: var(--accent) }
+    .input-select:focus { border-color: var(--accent); box-shadow: none; }
 
     .input-row { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap }
 
@@ -530,7 +535,7 @@
       font-family: 'Barlow', sans-serif;
       transition: border-color 0.15s;
     }
-    .input-num:focus { border-color: var(--accent) }
+    .input-num:focus { border-color: var(--accent); box-shadow: none; }
 
     .add-btn {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -697,6 +702,7 @@
       padding: 0;
     }
     .set-fact::placeholder { color: var(--txt3); font-weight: 400 }
+    .set-fact:focus { box-shadow: none; }
     .set-fact.fact-done { color: var(--green) }
     .set-fact.fact-fail { color: var(--red) }
 
@@ -708,11 +714,14 @@
       font-weight: 700;
       color: var(--accent);
       outline: none;
+      box-shadow: none;
+      -webkit-appearance: none;
       width: 60px;
       text-align: center;
       border-bottom: 1.5px solid var(--accent);
       padding: 0;
     }
+    .td-weight-input:focus { outline: none; box-shadow: none; }
 
     /* Убираем стрелки у всех number-полей одним блоком */
     .input-num::-webkit-inner-spin-button,
