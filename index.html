@@ -602,8 +602,12 @@
       text-transform: uppercase;
       letter-spacing: 0.03em;
       white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
     }
+    .td-name:hover { color: var(--accent2) }
     .td-name.is-main { color: var(--accent2) }
+    .td-name.is-main:hover { color: var(--accent) }
 
     .td-weight {
       font-size: 15px;
@@ -766,6 +770,18 @@
     .ctx-item.danger:hover { background: rgba(255,59,92,.12) }
 
     .ctx-sep { height: 1px; background: var(--border); margin: 3px 0 }
+
+    /* ── КОПИРОВАНИЕ ── */
+    .day.copied {
+      box-shadow: inset 0 0 0 2px var(--accent2), 0 0 10px rgba(255,140,0,.3);
+    }
+    .day.copied .dnum { color: var(--accent2) }
+
+    .day.paste-hint {
+      box-shadow: inset 0 0 0 1.5px var(--green);
+    }
+
+    #dayCtxMenu { min-width: 200px }
 
     /* ── ПОПАП OVERFLOW ── */
     .overflow-pop {
@@ -1142,6 +1158,15 @@
     <div class="ctx-item danger" id="exCtxDel">✕ Удалить</div>
   </div>
 
+  <!-- Контекстное меню ячейки дня -->
+  <div class="ctx-menu" id="dayCtxMenu">
+    <div class="ctx-item" id="dayCtxCopy">📋 Копировать тренировку</div>
+    <div class="ctx-sep" id="dayCtxSep" style="display:none"></div>
+    <div class="ctx-item" id="dayCtxPaste" style="display:none">📌 Вставить тренировку</div>
+    <div class="ctx-sep" id="dayCtxSep2" style="display:none"></div>
+    <div class="ctx-item danger" id="dayCtxCancel" style="display:none">✕ Отменить копирование</div>
+  </div>
+
   <div id="csLoader" class="cs-loader">
     <div class="cs-ring"></div>
     <div class="cs-text">СИНХРОНИЗАЦИЯ...</div>
@@ -1514,6 +1539,15 @@
         renderDayChips(el, k, workouts[k] || []);
         el.addEventListener('click', () => openDay(k));
         elCalGrid.appendChild(el);
+      }
+
+      // восстановить подсветку после перерисовки календаря
+      if (copiedDate) {
+        const copied = $('day-' + copiedDate);
+        if (copied) copied.classList.add('copied');
+        document.querySelectorAll('.day').forEach(d => {
+          if (d.id !== 'day-' + copiedDate) d.classList.add('paste-hint');
+        });
       }
     }
 
@@ -1935,6 +1969,21 @@
         inp.addEventListener('click', ev => ev.stopPropagation());
         return;
       }
+
+      // Клик на название упражнения — выбрать в селекте
+      const tdName = e.target.closest('.td-name');
+      if (tdName) {
+        const ex = tdName.textContent.trim();
+        if (exercises.includes(ex)) {
+          elExSelect.value = ex;
+          syncORM();
+          // подсветить строку
+          document.querySelectorAll('.workout-table tbody tr').forEach(r => r.style.outline = '');
+          tdName.closest('tr').style.outline = '1.5px solid var(--accent)';
+          setTimeout(() => { const tr = tdName.closest('tr'); if (tr) tr.style.outline = ''; }, 800);
+        }
+        return;
+      }
     });
 
     // Ввод факта
@@ -2004,10 +2053,150 @@
     $('prevBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() - 7); renderCalendar(); });
     $('nextBtn').addEventListener('click', () => { anchorMonday.setDate(anchorMonday.getDate() + 7); renderCalendar(); });
 
+    // ── Копирование / вставка тренировки ──
+    let copiedDate   = null;
+    const elDayCtx   = $('dayCtxMenu');
+    const elDCtxCopy = $('dayCtxCopy');
+    const elDCtxPaste  = $('dayCtxPaste');
+    const elDCtxCancel = $('dayCtxCancel');
+    const elDCtxSep    = $('dayCtxSep');
+    const elDCtxSep2   = $('dayCtxSep2');
+
+    function setCopiedDate(dateKey) {
+      // снять предыдущий highlight
+      if (copiedDate) {
+        const prev = $('day-' + copiedDate);
+        if (prev) prev.classList.remove('copied');
+      }
+      copiedDate = dateKey;
+      if (dateKey) {
+        const el = $('day-' + dateKey);
+        if (el) el.classList.add('copied');
+        // подсветить все ячейки как paste-hint
+        document.querySelectorAll('.day').forEach(d => {
+          if (d.id !== 'day-' + dateKey) d.classList.add('paste-hint');
+        });
+      } else {
+        document.querySelectorAll('.day.paste-hint').forEach(d => d.classList.remove('paste-hint'));
+      }
+    }
+
+    function cancelCopy() {
+      setCopiedDate(null);
+    }
+
+    function pasteWorkout(targetDate) {
+      const srcSets = setsByDate[copiedDate];
+      if (!srcSets?.length) { cancelCopy(); return; }
+
+      function doInsert(merge) {
+        const copies = srcSets.map(s => ({
+          ...s,
+          id: nextId++,
+          date: targetDate
+        }));
+        if (!merge) {
+          setsByDate[targetDate] = copies;
+        } else {
+          if (!setsByDate[targetDate]) setsByDate[targetDate] = [];
+          setsByDate[targetDate].push(...copies);
+          // пересчитать set_number по упражнениям
+          const exSetsMap = {};
+          setsByDate[targetDate].forEach(s => {
+            if (!exSetsMap[s.exercise]) exSetsMap[s.exercise] = [];
+            exSetsMap[s.exercise].push(s);
+          });
+          Object.values(exSetsMap).forEach(arr => {
+            arr.sort((a,b) => a.id - b.id).forEach((s,i) => s.set_number = i + 1);
+          });
+        }
+        // mark targetDate dirty
+        const prevCur = curDate;
+        curDate = targetDate;
+        persist();
+        curDate = prevCur;
+        updateDayInCalendar(targetDate);
+        cancelCopy();
+      }
+
+      const hasTarget = setsByDate[targetDate]?.length > 0;
+      if (hasTarget && isTg) {
+        TM.showPopup({
+          title: 'Вставить тренировку',
+          message: 'В этот день уже есть подходы. Что сделать?',
+          buttons: [
+            { id: 'replace', type: 'default', text: 'Заменить' },
+            { id: 'merge',   type: 'default', text: 'Добавить к существующим' },
+            { id: 'cancel',  type: 'cancel' }
+          ]
+        }, (btnId) => {
+          if (btnId === 'replace') doInsert(false);
+          else if (btnId === 'merge') doInsert(true);
+        });
+      } else if (hasTarget) {
+        const choice = confirm('В этот день уже есть подходы.\nОК = Заменить, Отмена = Добавить к существующим');
+        doInsert(choice);
+      } else {
+        doInsert(false);
+      }
+    }
+
+    function showDayCtxMenu(e, dateKey) {
+      const hasWorkout = !!(setsByDate[dateKey]?.length);
+      const hasCopied  = !!copiedDate && copiedDate !== dateKey;
+
+      elDCtxCopy.style.display   = hasWorkout ? 'flex' : 'none';
+      elDCtxSep.style.display    = (hasWorkout && hasCopied) ? 'block' : 'none';
+      elDCtxPaste.style.display  = hasCopied ? 'flex' : 'none';
+      elDCtxSep2.style.display   = copiedDate ? 'block' : 'none';
+      elDCtxCancel.style.display = copiedDate ? 'flex' : 'none';
+
+      // если нечего показывать — не открываем
+      if (!hasWorkout && !copiedDate) return;
+
+      elDCtxCopy.onclick   = () => { setCopiedDate(dateKey); elDayCtx.classList.remove('open'); };
+      elDCtxPaste.onclick  = () => { pasteWorkout(dateKey);  elDayCtx.classList.remove('open'); };
+      elDCtxCancel.onclick = () => { cancelCopy();           elDayCtx.classList.remove('open'); };
+
+      const x = Math.min(e.clientX, window.innerWidth  - 210);
+      const y = Math.min(e.clientY, window.innerHeight - 200);
+      elDayCtx.style.left = x + 'px';
+      elDayCtx.style.top  = y + 'px';
+      elDayCtx.classList.add('open');
+    }
+
+    // ПКМ на сетке календаря (десктоп)
+    elCalGrid.addEventListener('contextmenu', e => {
+      const dayEl = e.target.closest('.day');
+      if (!dayEl) return;
+      e.preventDefault();
+      const dateKey = dayEl.id.replace('day-', '');
+      showDayCtxMenu(e, dateKey);
+    });
+
+    // Long press на сетке (мобайл)
+    let lpTimer = null, lpMoved = false;
+    elCalGrid.addEventListener('touchstart', e => {
+      const dayEl = e.target.closest('.day');
+      if (!dayEl) return;
+      lpMoved = false;
+      lpTimer = setTimeout(() => {
+        if (lpMoved) return;
+        const dateKey = dayEl.id.replace('day-', '');
+        const touch   = e.touches[0];
+        showDayCtxMenu({ clientX: touch.clientX, clientY: touch.clientY }, dateKey);
+      }, 500);
+    }, { passive: true });
+
+    elCalGrid.addEventListener('touchmove',  () => { lpMoved = true; clearTimeout(lpTimer); }, { passive: true });
+    elCalGrid.addEventListener('touchend',   () => clearTimeout(lpTimer), { passive: true });
+    elCalGrid.addEventListener('touchcancel',() => clearTimeout(lpTimer), { passive: true });
+
     // ── Единый глобальный обработчик кликов для закрытия попапов ──
     document.addEventListener('click', e => {
       elCtxMenu.classList.remove('open');
       elExCtxMenu.classList.remove('open');
+      elDayCtx.classList.remove('open');
       if (!elEditorDrop.contains(e.target) && e.target !== elExSelect) elEditorDrop.classList.remove('open');
       if (elOverflowPop.classList.contains('open') && !elOverflowPop.contains(e.target)) closeOverflowPop();
     });
@@ -2016,6 +2205,8 @@
       if (e.key === 'Escape') {
         elCtxMenu.classList.remove('open');
         elExCtxMenu.classList.remove('open');
+        elDayCtx.classList.remove('open');
+        cancelCopy();
         closeOverflowPop();
       }
     });
