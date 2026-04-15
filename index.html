@@ -1161,10 +1161,6 @@
         <div class="input-bar">
           <div style="display:flex;gap:8px;align-items:center;position:relative">
             <select class="input-select" id="exSelect" style="flex:1;margin:0"></select>
-            <span style="color:var(--accent2);font-size:11px;font-weight:700;flex-shrink:0;margin-left:auto;text-transform:uppercase;letter-spacing:0.04em">1ПМ</span>
-            <input class="input-num" id="inORM" type="number" inputmode="decimal" min="0" max="9999" step="0.5" placeholder="кг"
-              style="color:var(--accent2);flex-shrink:0">
-            <button class="save-rec-btn" id="saveRecBtn" title="Сохранить в рекорды">↑ РЕК</button>
             <div class="editor-drop" id="editorDrop">
               <div class="editor-drop-handle" id="editorDropHandle"></div>
               <div class="editor-drop-title">Упражнения</div>
@@ -1272,7 +1268,6 @@
     const elModalBox      = $('modalBox');
     const elModalTitle    = $('modalTitle');
     const elExSelect      = $('exSelect');
-    const elInORM         = $('inORM');
     const elInWt          = $('inWt');
     const elInPlan        = $('inPlan');
     const elTableWrap     = $('workoutTableWrap');
@@ -1498,7 +1493,6 @@
     }
     limitIntInput(elInPlan);
     limitFloatInput(elInWt);
-    limitFloatInput(elInORM);
 
     // ── Шапка — статы ──
     function renderHdrStats() {
@@ -1513,70 +1507,85 @@
     }
     renderHdrStats();
 
-    // Клик на вес атлета — инлайн-редактирование
-    $('chipBodyweight').addEventListener('click', () => {
-      const tip = $('recTip');
-      if (tip && tip.classList.contains('open')) { tip.classList.remove('open'); return; }
-      const valEl = $('valBodyweight');
-      if (!valEl) return;
-      const inp = document.createElement('input');
-      inp.className = 'chip-input'; inp.type = 'number'; inp.inputMode = 'decimal'; inp.min = 0; inp.max = 999; inp.step = 0.1;
-      inp.value = bwVal() || ''; inp.placeholder = 'кг';
-      valEl.replaceWith(inp); inp.focus(); inp.select();
-      let saved = false;
+    function setupStatChip(exName, isBw, valId, getValFn, saveValFn) {
+      const valElOrig = $(valId);
+      const chip = valElOrig?.closest('.stat-chip');
+      if (!chip) return;
 
-      function closeInput() {
-        if (saved) return; saved = true;
-        const curBw = bwVal();
-        const span = document.createElement('span');
-        span.id = 'valBodyweight'; span.className = 'stat-chip-val';
-        span.textContent = curBw != null ? `${curBw} кг` : '— кг';
-        inp.replaceWith(span);
-      }
+      chip.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        if (!$('recTip').classList.contains('open')) showRecTip(exName, chip, isBw);
+        else $('recTip').classList.remove('open');
+      });
 
-      function save() {
-        if (saved) return;
-        const txt = inp.value.replace(',', '.');
-        const v = parseFloat(txt);
-        if (!isNaN(v) && v > 0) {
-           const today = dateToKey(new Date());
-           const last = bodyweight.length ? bodyweight[bodyweight.length - 1] : null;
-           if (last && last.value === v) {
-              last.date = today;
-           } else if (last && last.date === today) {
-              last.value = v;
-           } else {
-              bodyweight.push({ value: v, date: today });
-           }
-           persist();
+      let lpTimer = null, lpMoved = false;
+      chip.addEventListener('touchstart', e => {
+        lpMoved = false;
+        lpTimer = setTimeout(() => {
+          if (lpMoved) return;
+          if (!$('recTip').classList.contains('open')) showRecTip(exName, chip, isBw);
+        }, 500);
+      }, { passive: true });
+      chip.addEventListener('touchmove', () => { lpMoved = true; clearTimeout(lpTimer); }, { passive: true });
+      chip.addEventListener('touchend', () => clearTimeout(lpTimer), { passive: true });
+      chip.addEventListener('touchcancel', () => clearTimeout(lpTimer), { passive: true });
+
+      chip.addEventListener('click', () => {
+        const tip = $('recTip');
+        if (tip && tip.classList.contains('open')) { tip.classList.remove('open'); return; }
+        const currentValEl = $(valId);
+        if (!currentValEl || currentValEl.tagName === 'INPUT') return;
+        
+        const inp = document.createElement('input');
+        inp.className = 'chip-input'; inp.type = 'number'; inp.inputMode = 'decimal'; inp.min = 0; inp.max = 9999; inp.step = 0.5;
+        inp.value = getValFn() || ''; inp.placeholder = 'кг';
+        currentValEl.replaceWith(inp); inp.focus(); inp.select();
+        let saved = false;
+
+        function closeInput() {
+          if (saved) return; saved = true;
+          const curVal = getValFn();
+          const span = document.createElement('span');
+          span.id = valId; span.className = isBw ? 'stat-chip-val' : 'stat-chip-val highlight';
+          span.textContent = curVal != null ? `${curVal} кг` : '— кг';
+          inp.replaceWith(span);
         }
-        closeInput();
-        renderHdrStats();
-      }
-      inp.addEventListener('blur', save);
-      inp.addEventListener('keydown', e => {
-        if (e.key === 'Enter') inp.blur();
-        if (e.key === 'Escape') { saved = true; closeInput(); }
+
+        function save() {
+          if (saved) return;
+          const v = parseFloat(inp.value.replace(',', '.'));
+          if (!isNaN(v) && v > 0) {
+             const today = dateToKey(new Date());
+             saveValFn(v, today);
+             persist();
+          }
+          closeInput();
+          renderHdrStats();
+        }
+        inp.addEventListener('blur', save);
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Enter') inp.blur();
+          if (e.key === 'Escape') { saved = true; closeInput(); }
+        });
+      });
+    }
+
+    setupStatChip('Вес атлета', true, 'valBodyweight', bwVal, (v, today) => {
+       const last = bodyweight.length ? bodyweight[bodyweight.length - 1] : null;
+       if (last && last.value === v) last.date = today;
+       else if (last && last.date === today) last.value = v;
+       else bodyweight.push({ value: v, date: today });
+    });
+
+    REC_EX.forEach(({ ex, id }) => {
+      setupStatChip(ex, false, id, () => recVal(ex), (v, today) => {
+         if (!Array.isArray(records[ex])) records[ex] = [];
+         const r = records[ex];
+         const last = r.length ? r[r.length - 1] : null;
+         if (last && last.date === null && last.value === v) last.date = today;
+         else r.push({ value: v, date: today });
       });
     });
-
-    $('chipBodyweight').addEventListener('contextmenu', e => {
-      e.preventDefault();
-      if (!$('recTip').classList.contains('open')) showRecTip('Вес атлета', $('chipBodyweight'), true);
-      else $('recTip').classList.remove('open');
-    });
-
-    let bwLpTimer = null, bwLpMoved = false;
-    $('chipBodyweight').addEventListener('touchstart', e => {
-      bwLpMoved = false;
-      bwLpTimer = setTimeout(() => {
-        if (bwLpMoved) return;
-        if (!$('recTip').classList.contains('open')) showRecTip('Вес атлета', $('chipBodyweight'), true);
-      }, 500);
-    }, { passive: true });
-    $('chipBodyweight').addEventListener('touchmove', () => { bwLpMoved = true; clearTimeout(bwLpTimer); }, { passive: true });
-    $('chipBodyweight').addEventListener('touchend', () => clearTimeout(bwLpTimer), { passive: true });
-    $('chipBodyweight').addEventListener('touchcancel', () => clearTimeout(bwLpTimer), { passive: true });
 
     // ── Календарь ──
     const now = new Date();
@@ -1965,15 +1974,6 @@
       elRecTip.style.top  = top  + 'px';
     }
 
-    REC_EX.forEach(({ ex, id }) => {
-      const chip = $(id)?.closest('.stat-chip');
-      if (!chip) return;
-      chip.addEventListener('click', e => {
-        e.stopPropagation();
-        if (elRecTip.classList.contains('open')) { elRecTip.classList.remove('open'); return; }
-        showRecTip(ex, chip);
-      });
-    });
 
     // ── Контекстное меню истории рекордов ──
     let recCtxTarget = { ex: null, idx: null, isBw: false };
@@ -2039,7 +2039,6 @@
             showRecTip(recCtxTarget.ex, lastRecAnchor, recCtxTarget.isBw);
           } else {
             elRecTip.classList.remove('open');
-            if (!recCtxTarget.isBw) syncORM();
           }
         }
       }
@@ -2058,7 +2057,6 @@
         div.addEventListener('click', () => {
           selEx = ex;
           elExSelect.value = ex;
-          syncORM();
           elExListbox.querySelectorAll('.ex-listbox-item').forEach(d => d.classList.remove('sel'));
           div.classList.add('sel');
           elEditorDrop.classList.remove('open');
@@ -2382,7 +2380,6 @@
         const ex = tdName.textContent.trim();
         if (exercises.includes(ex)) {
           elExSelect.value = ex;
-          syncORM();
           // подсветить строку
           document.querySelectorAll('.workout-table tbody tr').forEach(r => r.style.outline = '');
           tdName.closest('tr').style.outline = '1.5px solid var(--accent)';
