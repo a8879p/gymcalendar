@@ -1311,10 +1311,8 @@
       } catch(e) {}
       try { const s = localStorage.getItem('gd_rec');  if (s) records    = JSON.parse(s); } catch(e) {}
     }
-    initLocalData();
 
-    // ── Миграция: слияние "Жим лежа" -> "Жим лёжа" ──
-    (function mergeZhim() {
+    function runMigrations() {
       let changed = false;
       if (records['Жим лежа']) {
         if (records['Жим лёжа']) {
@@ -1325,30 +1323,24 @@
         delete records['Жим лежа'];
         changed = true;
       }
-      
       const idx = exercises.indexOf('Жим лежа');
       if (idx !== -1) {
         exercises.splice(idx, 1);
         if (!exercises.includes('Жим лёжа')) exercises.push('Жим лёжа');
         changed = true;
       }
-      
       Object.keys(setsByDate).forEach(date => {
         let dayChanged = false;
         setsByDate[date].forEach(s => {
-          if (s.exercise === 'Жим лежа') {
-            s.exercise = 'Жим лёжа';
-            dayChanged = true;
-          }
+          if (s.exercise === 'Жим лежа') { s.exercise = 'Жим лёжа'; dayChanged = true; }
         });
-        if (dayChanged) {
-          dirtyDates.add(date);
-          changed = true;
-        }
+        if (dayChanged) { dirtyDates.add(date); changed = true; }
       });
-      
       if (changed) persist();
-    })();
+    }
+
+    initLocalData();
+    runMigrations();
 
 
     // ── Хелпер: получить последнее числовое значение рекорда ──
@@ -1412,10 +1404,23 @@
       pendingCloudSaves.clear();
       keys.forEach(k => {
         if (k.startsWith('DEL:')) {
-          TM.CloudStorage.removeItem(k.slice(4), err => { if (err) pendingCloudSaves.add(k); });
+          const baseKey = k.slice(4);
+          TM.CloudStorage.removeItem(baseKey, err => { if (err) pendingCloudSaves.add(k); });
+          for(let i=1; i<=10; i++) TM.CloudStorage.removeItem(`${baseKey}_${i}`, ()=>{});
         } else {
           const v = localStorage.getItem(k);
-          if (v) TM.CloudStorage.setItem(k, v, err => { if (err) pendingCloudSaves.add(k); });
+          if (v) {
+            if (v.length <= 3500) {
+               TM.CloudStorage.setItem(k, v, err => { if (err) pendingCloudSaves.add(k); else { for(let i=1; i<=10; i++) TM.CloudStorage.removeItem(`${k}_${i}`, ()=>{}); } });
+            } else {
+               const chunks = [];
+               for(let i=0; i<v.length; i+=3500) chunks.push(v.slice(i, i+3500));
+               TM.CloudStorage.setItem(k, `__CHUNKED__${chunks.length}__` + chunks[0], err => { if(err) pendingCloudSaves.add(k); });
+               for(let i=1; i<chunks.length; i++) {
+                 TM.CloudStorage.setItem(`${k}_${i}`, chunks[i], ()=>{});
+               }
+            }
+          }
         }
       });
     }
@@ -1427,13 +1432,36 @@
         if (!keys?.length) {
           for (let i = 0; i < localStorage.length; i++) {
             const k = localStorage.key(i);
-            if (k?.startsWith('gd_')) TM.CloudStorage.setItem(k, localStorage.getItem(k), () => {});
+            if (k?.startsWith('gd_')) {
+              const v = localStorage.getItem(k);
+              if (v.length <= 3500) TM.CloudStorage.setItem(k, v, () => {});
+              else pendingCloudSaves.add(k);
+            }
           }
+          if(pendingCloudSaves.size > 0) syncDirtyKeysToCloud();
           finishCloudSync(); return;
         }
         TM.CloudStorage.getItems(keys, (e, vals) => {
           if (e) { TM.showAlert('Ошибка загрузки данных из облака. Загружен локальный кэш.'); }
-          else if (vals) { Object.keys(vals).forEach(k => localStorage.setItem(k, vals[k])); initLocalData(); }
+          else if (vals) { 
+            const reassembled = {};
+            Object.keys(vals).forEach(k => {
+              if (k.match(/_\d+$/)) return;
+              let val = vals[k];
+              if (val.startsWith('__CHUNKED__')) {
+                const m = val.match(/^__CHUNKED__(\d+)__(.*)/);
+                if (m) {
+                  const count = parseInt(m[1]);
+                  val = m[2];
+                  for (let i = 1; i < count; i++) val += (vals[`${k}_${i}`] || '');
+                }
+              }
+              reassembled[k] = val;
+            });
+            Object.keys(reassembled).forEach(k => localStorage.setItem(k, reassembled[k])); 
+            initLocalData(); 
+            runMigrations();
+          }
           finishCloudSync();
         });
       });
