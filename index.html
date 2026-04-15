@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Дневник Тренировок</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -156,7 +156,7 @@
       border: 1px solid var(--border2);
       border-radius: 14px;
       z-index: 600;
-      padding: 14px;
+      padding: 10px;
       box-shadow: 0 8px 40px rgba(0,0,0,.7);
     }
     .editor-drop.open { display: block }
@@ -177,7 +177,7 @@
     }
 
     .editor-drop-title {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--txt2);
       margin-bottom: 8px;
@@ -195,8 +195,8 @@
     }
 
     .ex-listbox-item {
-      padding: 9px 12px;
-      font-size: 14px;
+      padding: 6px 12px;
+      font-size: 18px;
       font-weight: 500;
       color: var(--txt);
       cursor: pointer;
@@ -213,8 +213,8 @@
       border: 1px solid var(--border2);
       background: var(--surface2);
       border-radius: 8px;
-      padding: 7px 4px;
-      font-size: 13px;
+      padding: 6px 4px;
+      font-size: 16px;
       cursor: pointer;
       color: var(--txt);
       font-weight: 600;
@@ -229,8 +229,8 @@
       flex: 1;
       border: 1px solid var(--border2);
       border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 14px;
+      padding: 6px 10px;
+      font-size: 16px;
       background: var(--bg);
       color: var(--txt);
       outline: none;
@@ -241,8 +241,8 @@
       background: var(--accent);
       border: none;
       border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 14px;
+      padding: 6px 14px;
+      font-size: 16px;
       color: #fff;
       cursor: pointer;
       font-weight: 700;
@@ -426,7 +426,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 24px 14px;
+      padding: 14px 18px 10px;
       border-bottom: 1px solid var(--border);
       background: linear-gradient(90deg, var(--surface2) 0%, var(--surface) 100%);
       position: relative;
@@ -463,17 +463,17 @@
     }
     .modal-close:hover { background: var(--red); color: #fff; border-color: var(--red) }
 
-    .modal-body { padding: 18px 24px }
+    .modal-body { padding: 12px 18px }
 
     /* ── ПАНЕЛЬ ВВОДА ── */
     .input-bar {
       background: var(--bg);
       border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 16px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       border: 1px solid var(--border2);
     }
 
@@ -482,8 +482,8 @@
       max-width: 100%;
       border: 1px solid var(--border2);
       border-radius: 8px;
-      padding: 8px 4px;
-      font-size: 17px;
+      padding: 4px 4px;
+      font-size: 20px;
       font-weight: 600;
       background: var(--surface2);
       color: var(--txt);
@@ -513,7 +513,7 @@
       flex-shrink: 0;
       border: 1px solid var(--border2);
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 4px 8px;
       font-size: 18px;
       font-weight: 500;
       background: var(--surface2);
@@ -528,7 +528,7 @@
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       border: none;
       border-radius: 8px;
-      padding: 10px 24px;
+      padding: 8px 18px;
       cursor: pointer;
       font-size: 15px;
       font-weight: 500;
@@ -556,7 +556,7 @@
     .workout-table thead tr { background: var(--bg) }
 
     .workout-table thead th {
-      padding: 9px 14px;
+      padding: 6px 12px;
       font-size: 11px;
       font-weight: 800;
       color: var(--txt3);
@@ -573,7 +573,7 @@
     .workout-table tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border) }
 
     .workout-table tbody td {
-      padding: 10px 14px;
+      padding: 6px 12px;
       background: var(--surface);
       vertical-align: middle;
     }
@@ -622,7 +622,7 @@
       align-items: center;
       justify-content: center;
       min-width: 38px;
-      height: 34px;
+      height: 30px;
       border-radius: 8px;
       border: 1.5px solid var(--border2);
       background: var(--surface2);
@@ -643,7 +643,7 @@
       justify-content: center;
       gap: 3px;
       min-width: 64px;
-      height: 34px;
+      height: 30px;
       border-radius: 8px;
       border: 1.5px solid var(--border2);
       background: var(--surface2);
@@ -986,7 +986,7 @@
         background: var(--border2);
       }
 
-      .modal-hdr { padding: 14px 8px 12px }
+      .modal-hdr { padding: 12px 8px 10px }
 
       .modal-body {
         flex: 1;
@@ -1013,8 +1013,8 @@
       .workout-table th.th-name,
       .workout-table td.td-name { padding-right: 20px }
 
-      .workout-table tbody td  { padding: 8px 2px }
-      .workout-table thead th  { padding: 8px 2px }
+      .workout-table tbody td  { padding: 6px 2px }
+      .workout-table thead th  { padding: 6px 2px }
 
       .input-bar {
         order: 2;
@@ -1024,7 +1024,7 @@
         border-right: none;
         border-bottom: none;
         border-top: 1px solid var(--border2);
-        padding: 10px 8px 16px;
+        padding: 8px 8px 12px;
         background: var(--surface);
       }
 
@@ -1070,22 +1070,22 @@
 
     /* ── ДЕСКТОП: компактная модалка ── */
     @media(min-width: 601px) {
-      .modal-hdr        { padding: 12px 18px 10px }
+      .modal-hdr        { padding: 10px 16px 8px }
       .modal-hdr h2     { font-size: 15px }
       .modal-close      { width: 26px; height: 26px; font-size: 14px }
-      .modal-body       { padding: 12px 16px }
-      .input-bar        { padding: 8px 10px; gap: 5px; margin-bottom: 10px; border-radius: 8px }
-      .input-select     { font-size: 15px; padding: 5px 4px }
+      .modal-body       { padding: 8px 14px }
+      .input-bar        { padding: 6px 8px; gap: 4px; margin-bottom: 8px; border-radius: 8px }
+      .input-select     { font-size: 18px; padding: 2px 4px }
       .input-label      { font-size: 11px; width: 70px }
-      .input-num        { font-size: 14px; padding: 5px 8px; width: 64px; height: 30px }
-      .add-btn          { font-size: 12px; padding: 6px 14px }
-      .workout-table thead th { padding: 6px 10px; font-size: 11px }
-      .workout-table tbody td { padding: 6px 10px }
+      .input-num        { font-size: 14px; padding: 2px 6px; width: 64px; height: 26px }
+      .add-btn          { font-size: 12px; padding: 4px 10px }
+      .workout-table thead th { padding: 4px 8px; font-size: 11px }
+      .workout-table tbody td { padding: 4px 8px }
       .td-name          { font-size: 13px }
       .td-weight        { font-size: 13px }
       .td-pct           { font-size: 12px }
-      .set-cell         { min-width: 28px; height: 28px; font-size: 14px; border-radius: 6px }
-      .set-cell-wrap    { min-width: 50px; height: 28px; padding: 0 4px; gap: 2px; border-radius: 6px }
+      .set-cell         { min-width: 28px; height: 24px; font-size: 14px; border-radius: 6px }
+      .set-cell-wrap    { min-width: 50px; height: 24px; padding: 0 4px; gap: 2px; border-radius: 6px }
       .set-plan         { font-size: 13px }
       .set-sep          { font-size: 11px }
       .set-fact         { font-size: 13px; width: 24px }
@@ -1286,20 +1286,6 @@
     const elDayCtx        = $('dayCtxMenu');
     const elRecCtxMenu    = $('recCtxMenu');
 
-    // ── Миграция старого формата ──
-    try {
-      const old = localStorage.getItem('gd_sets2');
-      if (old) {
-        const d = JSON.parse(old);
-        const sbd = d.setsByDate || {};
-        if (Array.isArray(d.sets)) {
-          d.sets.forEach(s => { if (!sbd[s.date]) sbd[s.date] = []; sbd[s.date].push(s); });
-        }
-        Object.keys(sbd).forEach(k => localStorage.setItem('gd_d_' + k, JSON.stringify(sbd[k])));
-        localStorage.setItem('gd_meta', JSON.stringify({ nextId: d.nextId || 1 }));
-        localStorage.removeItem('gd_sets2');
-      }
-    } catch(e) {}
 
     // ── Загрузка из localStorage ──
     function initLocalData() {
@@ -1327,19 +1313,43 @@
     }
     initLocalData();
 
-    // ── Миграция records: number / {value,date} → [{value,date}] ──
-    let recsMigrated = false;
-    Object.keys(records).forEach(ex => {
-      const r = records[ex];
-      if (typeof r === 'number') {
-        records[ex] = [{ value: r, date: null }];
-        recsMigrated = true;
-      } else if (r && typeof r === 'object' && !Array.isArray(r)) {
-        records[ex] = [{ value: r.value, date: r.date || null }];
-        recsMigrated = true;
+    // ── Миграция: слияние "Жим лежа" -> "Жим лёжа" ──
+    (function mergeZhim() {
+      let changed = false;
+      if (records['Жим лежа']) {
+        if (records['Жим лёжа']) {
+           records['Жим лёжа'] = [...records['Жим лёжа'], ...records['Жим лежа']].sort((a,b) => (a.date||'').localeCompare(b.date||''));
+        } else {
+           records['Жим лёжа'] = records['Жим лежа'];
+        }
+        delete records['Жим лежа'];
+        changed = true;
       }
-    });
-    if (recsMigrated) try { localStorage.setItem('gd_rec', JSON.stringify(records)); } catch(e) {}
+      
+      const idx = exercises.indexOf('Жим лежа');
+      if (idx !== -1) {
+        exercises.splice(idx, 1);
+        if (!exercises.includes('Жим лёжа')) exercises.push('Жим лёжа');
+        changed = true;
+      }
+      
+      Object.keys(setsByDate).forEach(date => {
+        let dayChanged = false;
+        setsByDate[date].forEach(s => {
+          if (s.exercise === 'Жим лежа') {
+            s.exercise = 'Жим лёжа';
+            dayChanged = true;
+          }
+        });
+        if (dayChanged) {
+          dirtyDates.add(date);
+          changed = true;
+        }
+      });
+      
+      if (changed) persist();
+    })();
+
 
     // ── Хелпер: получить последнее числовое значение рекорда ──
     function recVal(ex) {
@@ -1564,8 +1574,7 @@
       if (!daySets?.length) return [];
       const exMap = {};
       daySets.forEach(s => { if (!exMap[s.exercise]) exMap[s.exercise] = []; exMap[s.exercise].push(s); });
-      const ordered = [...new Set(daySets.map(s => s.exercise))];
-      return ordered.map(ex => {
+      return Object.keys(exMap).map(ex => {
         const exSets = exMap[ex];
         const maxWt  = Math.max(...exSets.map(s => parseFloat(s.weight) || 0));
         const sorted = [...exSets].sort((a,b) => a.set_number - b.set_number);
@@ -1580,7 +1589,7 @@
         const pctRatio = recVal(ex) != null && maxWt > 0 ? maxWt / recVal(ex) : null;
         const wtColor  = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt)';
         const weightHTML = maxWt > 0
-          ? `<span style="color:${wtColor}">${maxWt}</span><span style="font-size:13px;color:var(--txt3);margin:0 0 0 1px;font-family:'Barlow Condensed',sans-serif;font-weight:500">×</span>`
+          ? `<span style="color:${wtColor}">${maxWt}</span><span style="font-size:13px;color:var(--txt2);margin:0 0 0 1px;font-family:'Barlow Condensed',sans-serif;font-weight:500">×</span>`
           : '';
         return { label: ex, weight: weightHTML, sets: setsHTML };
       });
@@ -1750,18 +1759,15 @@
       syncORM();
       loadDayData();
       elMbg.classList.add('open');
-      try { history.pushState({ modalOpen: true }, '', '#day-' + dateStr); } catch(e) {}
     }
 
     function closeDayModal() {
       if (!elMbg.classList.contains('open')) return;
       elMbg.classList.remove('open');
-      try { if (history.state?.modalOpen) history.back(); } catch(e) {}
     }
 
     $('modalClose').addEventListener('click', closeDayModal);
     elMbg.addEventListener('click', e => { if (e.target === elMbg) closeDayModal(); });
-    window.addEventListener('popstate', () => { elMbg.classList.remove('open'); });
 
     // ── Select упражнений ──
     function sortedExercises() {
