@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Дневник Тренировок</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -26,13 +26,16 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-    *:focus, *:focus-visible { outline: none !important; box-shadow: none !important; -webkit-tap-highlight-color: transparent; }
+    *:focus { outline: none !important; box-shadow: none !important; -webkit-tap-highlight-color: transparent; }
+    *:focus-visible { outline: none !important; box-shadow: none !important; }
+    input:focus, input:focus-visible, select:focus, select:focus-visible, button:focus, button:focus-visible { outline: none !important; box-shadow: none !important; }
     input, textarea { -webkit-user-select: text; user-select: text; caret-color: var(--accent); }
     ::selection { background: rgba(255, 79, 0, 0.4); color: inherit; }
+    ::-moz-selection { background: rgba(255, 79, 0, 0.4); color: inherit; }
     input:-webkit-autofill, input:-webkit-autofill:focus { transition: background-color 5000s ease-in-out 0s; -webkit-text-fill-color: var(--txt) !important; }
 
     body {
-      font-family: 'Barlow Condensed', sans-serif;
+      font-family: 'Barlow', sans-serif;
       background: var(--bg);
       color: var(--txt);
       height: 100vh;
@@ -79,6 +82,7 @@
     .nav-btn:hover { background: var(--border2); color: #fff }
 
     .month-title {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 20px;
       font-weight: 800;
       color: var(--txt);
@@ -142,10 +146,13 @@
       color: var(--txt);
       font-size: 16px;
       outline: none;
+      box-shadow: none;
       text-align: center;
       padding: 0 2px;
+      font-family: 'Barlow Condensed', sans-serif;
       font-weight: 500;
     }
+    .chip-input:focus { box-shadow: none; }
 
     /* ── РЕДАКТОР ДРОПДАУН ── */
     .editor-drop {
@@ -156,7 +163,7 @@
       border: 1px solid var(--border2);
       border-radius: 14px;
       z-index: 600;
-      padding: 10px;
+      padding: 14px;
       box-shadow: 0 8px 40px rgba(0,0,0,.7);
     }
     .editor-drop.open { display: block }
@@ -177,7 +184,7 @@
     }
 
     .editor-drop-title {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--txt2);
       margin-bottom: 8px;
@@ -195,10 +202,13 @@
     }
 
     .ex-listbox-item {
-      padding: 6px 12px;
-      font-size: 18px;
-      font-weight: 500;
+      padding: 9px 12px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
       color: var(--txt);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
       cursor: pointer;
       border-bottom: 1px solid var(--border);
       transition: background 0.15s;
@@ -213,8 +223,8 @@
       border: 1px solid var(--border2);
       background: var(--surface2);
       border-radius: 8px;
-      padding: 6px 4px;
-      font-size: 16px;
+      padding: 7px 4px;
+      font-size: 13px;
       cursor: pointer;
       color: var(--txt);
       font-weight: 600;
@@ -229,20 +239,21 @@
       flex: 1;
       border: 1px solid var(--border2);
       border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 16px;
+      padding: 8px 10px;
+      font-size: 14px;
       background: var(--bg);
       color: var(--txt);
       outline: none;
+      font-family: 'Barlow', sans-serif;
     }
-    .editor-input:focus { border-color: var(--accent); }
+    .editor-input:focus { border-color: var(--accent); box-shadow: none; }
 
     .editor-input-ok {
       background: var(--accent);
       border: none;
       border-radius: 8px;
-      padding: 6px 14px;
-      font-size: 16px;
+      padding: 8px 14px;
+      font-size: 14px;
       color: #fff;
       cursor: pointer;
       font-weight: 700;
@@ -273,8 +284,9 @@
 
     .wd {
       text-align: center;
+      font-family: 'Barlow', sans-serif;
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 700;
       color: var(--txt2);
       padding: 6px 0;
       text-transform: uppercase;
@@ -301,7 +313,9 @@
       overflow: hidden;
       position: relative;
       transition: background 0.1s;
-            -webkit-    }
+      user-select: none;
+      -webkit-user-select: none;
+    }
     .day:nth-child(7n) { border-right: none }
 
     .day.month-a           { background: #0d0d12 }
@@ -316,8 +330,9 @@
 
     /* ── НОМЕР ДНЯ ── */
     .dnum {
+      font-family: 'Barlow', sans-serif;
       font-size: 10px;
-      font-weight: 500;
+      font-weight: 700;
       color: var(--txt2);
       display: block;
       line-height: 1;
@@ -333,8 +348,9 @@
       width: 100%;
       padding: 1px 4px;
       border-radius: 4px;
+      font-family: 'Barlow', sans-serif;
       font-size: 13.5px;
-      font-weight: 500;
+      font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
       line-height: 1.25;
@@ -364,6 +380,7 @@
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 16px;
       font-weight: 500;
       letter-spacing: 0.02em;
@@ -375,6 +392,7 @@
       flex-shrink: 0;
       text-align: right;
       font-variant-numeric: tabular-nums;
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 16px;
       font-weight: 500;
       color: var(--txt);
@@ -384,6 +402,7 @@
 
     .chip-sets {
       flex-shrink: 0;
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 16px;
       font-weight: 600;
       display: flex;
@@ -426,7 +445,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 18px 10px;
+      padding: 18px 24px 14px;
       border-bottom: 1px solid var(--border);
       background: linear-gradient(90deg, var(--surface2) 0%, var(--surface) 100%);
       position: relative;
@@ -440,6 +459,7 @@
     }
 
     .modal-hdr h2 {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 20px;
       font-weight: 800;
       color: var(--txt);
@@ -463,17 +483,17 @@
     }
     .modal-close:hover { background: var(--red); color: #fff; border-color: var(--red) }
 
-    .modal-body { padding: 12px 18px }
+    .modal-body { padding: 18px 24px }
 
     /* ── ПАНЕЛЬ ВВОДА ── */
     .input-bar {
       background: var(--bg);
       border-radius: 12px;
-      padding: 8px 12px;
-      margin-bottom: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       border: 1px solid var(--border2);
     }
 
@@ -482,18 +502,19 @@
       max-width: 100%;
       border: 1px solid var(--border2);
       border-radius: 8px;
-      padding: 4px 4px;
-      font-size: 20px;
-      font-weight: 600;
-      background: var(--surface2);
-      color: var(--txt);
-      outline: none;
-      cursor: pointer;
+      padding: 8px 4px;
       font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--txt);
       text-transform: uppercase;
       letter-spacing: 0.03em;
+      background: var(--surface2);
+      outline: none;
+      cursor: pointer;
       transition: border-color 0.15s;
     }
+    .input-select:focus { border-color: var(--accent); box-shadow: none; }
 
     .input-row { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap }
 
@@ -513,30 +534,32 @@
       flex-shrink: 0;
       border: 1px solid var(--border2);
       border-radius: 8px;
-      padding: 4px 8px;
+      padding: 8px 10px;
       font-size: 18px;
-      font-weight: 500;
+      font-weight: 600;
       background: var(--surface2);
       color: var(--txt);
       outline: none;
       text-align: center;
+      font-family: 'Barlow', sans-serif;
       transition: border-color 0.15s;
     }
-    .input-num:focus { border-color: var(--accent); }
+    .input-num:focus { border-color: var(--accent); box-shadow: none; }
 
     .add-btn {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       border: none;
       border-radius: 8px;
-      padding: 8px 18px;
+      padding: 10px 24px;
       cursor: pointer;
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 800;
       color: #fff;
       white-space: nowrap;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       transition: opacity 0.15s, transform 0.15s;
+      font-family: 'Barlow', sans-serif;
     }
     .add-btn:hover { opacity: 0.85; transform: translateY(-1px) }
 
@@ -550,13 +573,14 @@
     .workout-table {
       width: 100%;
       border-collapse: collapse;
+      font-family: 'Barlow', sans-serif;
       min-width: 400px;
     }
 
     .workout-table thead tr { background: var(--bg) }
 
     .workout-table thead th {
-      padding: 6px 12px;
+      padding: 9px 14px;
       font-size: 11px;
       font-weight: 800;
       color: var(--txt3);
@@ -573,28 +597,31 @@
     .workout-table tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border) }
 
     .workout-table tbody td {
-      padding: 6px 12px;
+      padding: 10px 14px;
       background: var(--surface);
       vertical-align: middle;
     }
 
     .td-num {
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 700;
       color: var(--txt3);
       text-align: center;
       width: 20px;
+      font-family: 'Barlow', sans-serif;
     }
 
     .td-name {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 17px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--txt);
       text-transform: uppercase;
       letter-spacing: 0.03em;
       white-space: nowrap;
       cursor: pointer;
-          }
+      user-select: none;
+    }
     .td-name:hover { color: var(--accent2) }
     .td-name.is-main { color: var(--accent2) }
     .td-name.is-main:hover { color: var(--accent) }
@@ -622,10 +649,11 @@
       align-items: center;
       justify-content: center;
       min-width: 38px;
-      height: 30px;
+      height: 34px;
       border-radius: 8px;
       border: 1.5px solid var(--border2);
       background: var(--surface2);
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 18px;
       font-weight: 700;
       color: var(--txt2);
@@ -643,7 +671,7 @@
       justify-content: center;
       gap: 3px;
       min-width: 64px;
-      height: 30px;
+      height: 34px;
       border-radius: 8px;
       border: 1.5px solid var(--border2);
       background: var(--surface2);
@@ -653,6 +681,7 @@
     .set-cell-wrap:focus-within { border-color: var(--accent) }
 
     .set-plan {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 17px;
       font-weight: 500;
       color: var(--txt2);
@@ -662,6 +691,7 @@
     }
 
     .set-sep {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 12px;
       font-weight: 500;
       color: var(--txt3);
@@ -672,25 +702,34 @@
       width: 30px;
       border: none;
       background: transparent;
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 17px;
       font-weight: 500;
       color: var(--txt2);
       outline: none;
-                  text-align: center;
+      box-shadow: none;
+      -webkit-appearance: none;
+      appearance: none;
+      text-align: center;
       padding: 0;
     }
     .set-fact::placeholder { color: var(--txt3); font-weight: 400 }
+    .set-fact:focus { outline: none; box-shadow: none; }
     .set-fact.fact-done { color: var(--green) }
     .set-fact.fact-fail { color: var(--red) }
 
     .td-weight-input {
       border: none;
       background: transparent;
+      font-family: 'Barlow', sans-serif;
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 700;
       color: var(--accent);
       outline: none;
-                  width: 60px;
+      box-shadow: none;
+      -webkit-appearance: none;
+      appearance: none;
+      width: 60px;
       text-align: center;
       padding: 0;
     }
@@ -797,6 +836,7 @@
       font-weight: 700;
       color: var(--txt);
       line-height: 1;
+      font-family: 'Barlow Condensed', sans-serif;
     }
 
     .overflow-pop-dow {
@@ -820,71 +860,6 @@
     .overflow-pop-close:hover { color: var(--txt) }
 
     .overflow-pop-list .day-chip { margin-bottom: 4px }
-
-    /* ── КНОПКА СОХРАНИТЬ РЕКОРД ── */
-    .save-rec-btn {
-      flex-shrink: 0;
-      border: 1px solid var(--accent2);
-      background: transparent;
-      border-radius: 8px;
-      padding: 5px 10px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--accent2);
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
-    }
-    .save-rec-btn:hover { background: var(--accent2); color: #fff }
-
-    /* ── ТУЛТИП РЕКОРДА ── */
-    .rec-tip {
-      display: none;
-      position: fixed;
-      z-index: 700;
-      background: var(--surface);
-      border: 1px solid var(--accent2);
-      border-radius: 12px;
-      padding: 12px 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,.7);
-      min-width: 180px;
-      max-width: 260px;
-      max-height: 320px;
-      overflow-y: auto;
-    }
-    .rec-tip.open { display: block }
-    .rec-tip-label {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--txt2);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 8px;
-    }
-    .rec-tip-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 4px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .rec-tip-row:last-child { border-bottom: none }
-    .rec-tip-row.latest .rec-tip-row-val { color: var(--accent2) }
-    .rec-tip-row-val {
-      font-size: 20px;
-      font-weight: 500;
-      color: var(--txt);
-      white-space: nowrap;
-    }
-    .rec-tip-row-date {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--txt2);
-      white-space: nowrap;
-    }
 
     /* ── ЛОАДЕР ── */
     .cs-loader {
@@ -912,6 +887,7 @@
     @keyframes cs-spin { to { transform: rotate(360deg) } }
 
     .cs-text {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 18px;
       font-weight: 800;
       color: var(--txt);
@@ -925,15 +901,19 @@
 
       .hdr {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-        margin-bottom: 6px;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 10px;
         padding: 0 0.6rem;
       }
+      .hdr-nav {
+         width: 100%;
+         justify-content: space-between;
+      }
+      .month-title { font-size: 20px; text-align: center; flex: 1; }
+      .nav-btn { font-size: 24px; padding: 6px 16px; }
 
-      .month-title { font-size: 20px; min-width: 0 }
-
-      .hdr-stats { padding: 0 0.6rem; gap: 4px }
+      .hdr-stats { padding: 0 0.6rem; gap: 4px; justify-content: center; }
 
       .stat-chip {
         flex-direction: column;
@@ -986,7 +966,7 @@
         background: var(--border2);
       }
 
-      .modal-hdr { padding: 12px 8px 10px }
+      .modal-hdr { padding: 14px 8px 12px }
 
       .modal-body {
         flex: 1;
@@ -1013,8 +993,8 @@
       .workout-table th.th-name,
       .workout-table td.td-name { padding-right: 20px }
 
-      .workout-table tbody td  { padding: 6px 2px }
-      .workout-table thead th  { padding: 6px 2px }
+      .workout-table tbody td  { padding: 8px 2px }
+      .workout-table thead th  { padding: 8px 2px }
 
       .input-bar {
         order: 2;
@@ -1024,7 +1004,7 @@
         border-right: none;
         border-bottom: none;
         border-top: 1px solid var(--border2);
-        padding: 8px 8px 12px;
+        padding: 10px 8px 16px;
         background: var(--surface);
       }
 
@@ -1070,22 +1050,23 @@
 
     /* ── ДЕСКТОП: компактная модалка ── */
     @media(min-width: 601px) {
-      .modal-hdr        { padding: 10px 16px 8px }
+      .modal-hdr        { padding: 12px 18px 10px }
       .modal-hdr h2     { font-size: 15px }
       .modal-close      { width: 26px; height: 26px; font-size: 14px }
-      .modal-body       { padding: 8px 14px }
-      .input-bar        { padding: 6px 8px; gap: 4px; margin-bottom: 8px; border-radius: 8px }
-      .input-select     { font-size: 18px; padding: 2px 4px }
+      .modal-body       { padding: 12px 16px }
+      .input-bar        { padding: 8px 10px; gap: 5px; margin-bottom: 10px; border-radius: 8px }
+      .input-select     { font-size: 13px; padding: 5px 4px }
       .input-label      { font-size: 11px; width: 70px }
-      .input-num        { font-size: 14px; padding: 2px 6px; width: 64px; height: 26px }
-      .add-btn          { font-size: 12px; padding: 4px 10px }
-      .workout-table thead th { padding: 4px 8px; font-size: 11px }
-      .workout-table tbody td { padding: 4px 8px }
+      .input-num        { font-size: 14px; padding: 5px 8px; width: 64px; height: 30px }
+      .add-btn          { font-size: 12px; padding: 6px 14px }
+      .workout-table thead th { padding: 6px 10px; font-size: 11px }
+      .workout-table tbody td { padding: 6px 10px }
       .td-name          { font-size: 13px }
+      .ex-listbox-item  { font-size: 13px }
       .td-weight        { font-size: 13px }
       .td-pct           { font-size: 12px }
-      .set-cell         { min-width: 28px; height: 24px; font-size: 14px; border-radius: 6px }
-      .set-cell-wrap    { min-width: 50px; height: 24px; padding: 0 4px; gap: 2px; border-radius: 6px }
+      .set-cell         { min-width: 28px; height: 28px; font-size: 14px; border-radius: 6px }
+      .set-cell-wrap    { min-width: 50px; height: 28px; padding: 0 4px; gap: 2px; border-radius: 6px }
       .set-plan         { font-size: 13px }
       .set-sep          { font-size: 11px }
       .set-fact         { font-size: 13px; width: 24px }
@@ -1107,15 +1088,15 @@
           <span class="stat-chip-label">Вес атлета</span>
           <span class="stat-chip-val" id="valBodyweight">— кг</span>
         </div>
-        <div class="stat-chip">
+        <div class="stat-chip" id="chip-rec-stanovaya" title="Нажми чтобы изменить">
           <span class="stat-chip-label">Становая</span>
           <span class="stat-chip-val highlight" id="rec-stanovaya">— кг</span>
         </div>
-        <div class="stat-chip">
-          <span class="stat-chip-label">Жим лёжа</span>
+        <div class="stat-chip" id="chip-rec-zhim" title="Нажми чтобы изменить">
+          <span class="stat-chip-label">Жим лежа</span>
           <span class="stat-chip-val highlight" id="rec-zhim">— кг</span>
         </div>
-        <div class="stat-chip">
+        <div class="stat-chip" id="chip-rec-prisedaniya" title="Нажми чтобы изменить">
           <span class="stat-chip-label">Приседания</span>
           <span class="stat-chip-val highlight" id="rec-prisedaniya">— кг</span>
         </div>
@@ -1161,6 +1142,9 @@
         <div class="input-bar">
           <div style="display:flex;gap:8px;align-items:center;position:relative">
             <select class="input-select" id="exSelect" style="flex:1;margin:0"></select>
+            <span style="color:var(--accent2);font-size:11px;font-weight:700;flex-shrink:0;margin-left:auto;text-transform:uppercase;letter-spacing:0.04em">1ПМ</span>
+            <input class="input-num" id="inORM" type="number" inputmode="decimal" min="0" max="9999" step="0.5" placeholder="кг"
+              style="color:var(--accent2);flex-shrink:0">
             <div class="editor-drop" id="editorDrop">
               <div class="editor-drop-handle" id="editorDropHandle"></div>
               <div class="editor-drop-title">Упражнения</div>
@@ -1208,16 +1192,6 @@
     <div class="ctx-item danger" id="dayCtxCancel" style="display:none">✕ Отменить копирование</div>
   </div>
 
-  <!-- Контекстное меню истории рекордов -->
-  <div class="ctx-menu" id="recCtxMenu">
-    <div class="ctx-item" id="recCtxEdit">✎ Редактировать вес</div>
-    <div class="ctx-sep"></div>
-    <div class="ctx-item danger" id="recCtxDel">✕ Удалить запись</div>
-  </div>
-
-  <!-- Тултип рекорда -->
-  <div id="recTip" class="rec-tip"></div>
-
   <div id="csLoader" class="cs-loader">
     <div class="cs-ring"></div>
     <div class="cs-text">СИНХРОНИЗАЦИЯ...</div>
@@ -1239,14 +1213,13 @@
     const MONTHS       = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
     const MONTHS_SHORT = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
     const DAYS_RU      = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-    const PINNED       = ['Приседания','Жим лёжа','Становая тяга'];
+    const PINNED       = ['Приседания','Жим лежа','Становая тяга'];
     const REST         = ['Подтягивания','Жим стоя','Тяга штанги','Отжимания','Жим гантелей','Планка','Скручивания'];
     const WEEKS        = 4;
-    const isMob        = () => window.innerWidth <= 600;
 
     const REC_EX = [
       { ex: 'Становая тяга', id: 'rec-stanovaya' },
-      { ex: 'Жим лёжа',     id: 'rec-zhim'       },
+      { ex: 'Жим лежа',     id: 'rec-zhim'       },
       { ex: 'Приседания',   id: 'rec-prisedaniya' }
     ];
 
@@ -1254,7 +1227,7 @@
     let exercises        = [...PINNED, ...REST];
     let setsByDate       = {};
     let nextId           = 1;
-    let bodyweight       = [];
+    let bodyweight       = null;
     let records          = {};
     let pendingCloudSaves = new Set();
     let dirtyDates       = new Set();
@@ -1268,6 +1241,7 @@
     const elModalBox      = $('modalBox');
     const elModalTitle    = $('modalTitle');
     const elExSelect      = $('exSelect');
+    const elInORM         = $('inORM');
     const elInWt          = $('inWt');
     const elInPlan        = $('inPlan');
     const elTableWrap     = $('workoutTableWrap');
@@ -1279,8 +1253,21 @@
     const elOverflowPop   = $('overflowPop');
     const elCalGrid       = $('calGrid');
     const elDayCtx        = $('dayCtxMenu');
-    const elRecCtxMenu    = $('recCtxMenu');
 
+    // ── Миграция старого формата ──
+    try {
+      const old = localStorage.getItem('gd_sets2');
+      if (old) {
+        const d = JSON.parse(old);
+        const sbd = d.setsByDate || {};
+        if (Array.isArray(d.sets)) {
+          d.sets.forEach(s => { if (!sbd[s.date]) sbd[s.date] = []; sbd[s.date].push(s); });
+        }
+        Object.keys(sbd).forEach(k => localStorage.setItem('gd_d_' + k, JSON.stringify(sbd[k])));
+        localStorage.setItem('gd_meta', JSON.stringify({ nextId: d.nextId || 1 }));
+        localStorage.removeItem('gd_sets2');
+      }
+    } catch(e) {}
 
     // ── Загрузка из localStorage ──
     function initLocalData() {
@@ -1293,65 +1280,33 @@
       }
       try { const s = localStorage.getItem('gd_meta'); if (s) nextId     = JSON.parse(s).nextId || 1; } catch(e) {}
       try { const s = localStorage.getItem('gd_ex2');  if (s) exercises  = JSON.parse(s); } catch(e) {}
+      try { const s = localStorage.getItem('gd_bw');   if (s) bodyweight = parseFloat(s); } catch(e) {}
       try { 
-        const s = localStorage.getItem('gd_bw');   
+        const s = localStorage.getItem('gd_rec');  
         if (s) {
-          try {
-            const parsed = JSON.parse(s);
-            bodyweight = Array.isArray(parsed) ? parsed : [{ value: typeof parsed === 'object' ? parsed.value : parseFloat(parsed), date: null }];
-          } catch(e) {
-            bodyweight = [{ value: parseFloat(s), date: null }];
+          records = JSON.parse(s); 
+          if(records['Жим лёжа']) { records['Жим лежа'] = records['Жим лёжа']; delete records['Жим лёжа']; }
+          // Migrate old numeric records to object struct
+          for(let k in records) {
+             if (typeof records[k] === 'number') records[k] = { weight: records[k], date: null };
           }
-        } 
-      } catch(e) {}
-      try { const s = localStorage.getItem('gd_rec');  if (s) records    = JSON.parse(s); } catch(e) {}
-    }
-
-    function runMigrations() {
-      let changed = false;
-      if (records['Жим лежа']) {
-        if (records['Жим лёжа']) {
-           records['Жим лёжа'] = [...records['Жим лёжа'], ...records['Жим лежа']].sort((a,b) => (a.date||'').localeCompare(b.date||''));
-        } else {
-           records['Жим лёжа'] = records['Жим лежа'];
         }
-        delete records['Жим лежа'];
-        changed = true;
+      } catch(e) {}
+      // Populate missing dates for records by searching setsByDate
+      for(let k in records) {
+         if (records[k] && !records[k].date) {
+            let foundDate = null;
+            for (let d in setsByDate) {
+               if (setsByDate[d].some(s => s.exercise === k && s.fact === 1 && s.weight === records[k].weight)) {
+                  foundDate = d;
+                  break;
+               }
+            }
+            if (foundDate) records[k].date = foundDate;
+         }
       }
-      const idx = exercises.indexOf('Жим лежа');
-      if (idx !== -1) {
-        exercises.splice(idx, 1);
-        if (!exercises.includes('Жим лёжа')) exercises.push('Жим лёжа');
-        changed = true;
-      }
-      Object.keys(setsByDate).forEach(date => {
-        let dayChanged = false;
-        setsByDate[date].forEach(s => {
-          if (s.exercise === 'Жим лежа') { s.exercise = 'Жим лёжа'; dayChanged = true; }
-        });
-        if (dayChanged) { dirtyDates.add(date); changed = true; }
-      });
-      if (changed) persist();
     }
-
     initLocalData();
-    runMigrations();
-
-
-    // ── Хелпер: получить последнее числовое значение рекорда ──
-    function recVal(ex) {
-      const r = records[ex];
-      if (!r) return null;
-      if (Array.isArray(r) && r.length) return r[r.length - 1].value;
-      if (typeof r === 'object' && !Array.isArray(r)) return r.value;
-      if (typeof r === 'number') return r;
-      return null;
-    }
-
-    function bwVal() {
-      if (!bodyweight || !bodyweight.length) return null;
-      return bodyweight[bodyweight.length - 1].value;
-    }
 
     // ── Сохранение ──
     function persistImmediately() {
@@ -1362,12 +1317,9 @@
         localStorage.setItem('gd_ex2', JSON.stringify(exercises));
         pendingCloudSaves.add('gd_ex2');
 
-        if (bodyweight && bodyweight.length > 0) {
-          localStorage.setItem('gd_bw', JSON.stringify(bodyweight));
+        if (bodyweight != null) {
+          localStorage.setItem('gd_bw', String(bodyweight));
           pendingCloudSaves.add('gd_bw');
-        } else {
-          localStorage.removeItem('gd_bw');
-          pendingCloudSaves.add('DEL:gd_bw');
         }
 
         localStorage.setItem('gd_rec', JSON.stringify(records));
@@ -1399,23 +1351,10 @@
       pendingCloudSaves.clear();
       keys.forEach(k => {
         if (k.startsWith('DEL:')) {
-          const baseKey = k.slice(4);
-          TM.CloudStorage.removeItem(baseKey, err => { if (err) pendingCloudSaves.add(k); });
-          for(let i=1; i<=10; i++) TM.CloudStorage.removeItem(`${baseKey}_${i}`, ()=>{});
+          TM.CloudStorage.removeItem(k.slice(4), err => { if (err) pendingCloudSaves.add(k); });
         } else {
           const v = localStorage.getItem(k);
-          if (v) {
-            if (v.length <= 3500) {
-               TM.CloudStorage.setItem(k, v, err => { if (err) pendingCloudSaves.add(k); else { for(let i=1; i<=10; i++) TM.CloudStorage.removeItem(`${k}_${i}`, ()=>{}); } });
-            } else {
-               const chunks = [];
-               for(let i=0; i<v.length; i+=3500) chunks.push(v.slice(i, i+3500));
-               TM.CloudStorage.setItem(k, `__CHUNKED__${chunks.length}__` + chunks[0], err => { if(err) pendingCloudSaves.add(k); });
-               for(let i=1; i<chunks.length; i++) {
-                 TM.CloudStorage.setItem(`${k}_${i}`, chunks[i], ()=>{});
-               }
-            }
-          }
+          if (v) TM.CloudStorage.setItem(k, v, err => { if (err) pendingCloudSaves.add(k); });
         }
       });
     }
@@ -1427,36 +1366,13 @@
         if (!keys?.length) {
           for (let i = 0; i < localStorage.length; i++) {
             const k = localStorage.key(i);
-            if (k?.startsWith('gd_')) {
-              const v = localStorage.getItem(k);
-              if (v.length <= 3500) TM.CloudStorage.setItem(k, v, () => {});
-              else pendingCloudSaves.add(k);
-            }
+            if (k?.startsWith('gd_')) TM.CloudStorage.setItem(k, localStorage.getItem(k), () => {});
           }
-          if(pendingCloudSaves.size > 0) syncDirtyKeysToCloud();
           finishCloudSync(); return;
         }
         TM.CloudStorage.getItems(keys, (e, vals) => {
           if (e) { TM.showAlert('Ошибка загрузки данных из облака. Загружен локальный кэш.'); }
-          else if (vals) { 
-            const reassembled = {};
-            Object.keys(vals).forEach(k => {
-              if (k.match(/_\d+$/)) return;
-              let val = vals[k];
-              if (val.startsWith('__CHUNKED__')) {
-                const m = val.match(/^__CHUNKED__(\d+)__(.*)/);
-                if (m) {
-                  const count = parseInt(m[1]);
-                  val = m[2];
-                  for (let i = 1; i < count; i++) val += (vals[`${k}_${i}`] || '');
-                }
-              }
-              reassembled[k] = val;
-            });
-            Object.keys(reassembled).forEach(k => localStorage.setItem(k, reassembled[k])); 
-            initLocalData(); 
-            runMigrations();
-          }
+          else if (vals) { Object.keys(vals).forEach(k => localStorage.setItem(k, vals[k])); initLocalData(); }
           finishCloudSync();
         });
       });
@@ -1493,97 +1409,71 @@
     }
     limitIntInput(elInPlan);
     limitFloatInput(elInWt);
+    limitFloatInput(elInORM);
 
     // ── Шапка — статы ──
     function renderHdrStats() {
-      const bw = bwVal();
-      const bwEl = $('valBodyweight');
-      if (bwEl) bwEl.textContent = bw != null ? `${bw} кг` : '— кг';
+      $('valBodyweight').textContent = bodyweight != null ? `${bodyweight} кг` : '— кг';
       REC_EX.forEach(({ ex, id }) => {
         const el = $(id);
-        const v = recVal(ex);
-        if (el) el.textContent = v != null ? `${v} кг` : '— кг';
+        const rec = records[ex];
+        const w = (rec !== null && typeof rec === 'object' && rec.weight) ? rec.weight : (typeof rec === 'number' ? rec : null);
+        if (el) el.textContent = w != null ? `${w} кг` : '— кг';
       });
     }
     renderHdrStats();
 
-    function setupStatChip(exName, isBw, valId, getValFn, saveValFn) {
-      const valElOrig = $(valId);
-      const chip = valElOrig?.closest('.stat-chip');
-      if (!chip) return;
-
-      chip.addEventListener('contextmenu', e => {
-        e.preventDefault();
-        if (!$('recTip').classList.contains('open')) showRecTip(exName, chip, isBw);
-        else $('recTip').classList.remove('open');
+    // Клик на вес атлета — инлайн-редактирование
+    $('chipBodyweight').addEventListener('click', () => {
+      const valEl = $('valBodyweight');
+      if (valEl.tagName === 'INPUT') return;
+      const inp = document.createElement('input');
+      inp.className = 'chip-input'; inp.type = 'number'; inp.inputMode = 'decimal'; inp.min = 0; inp.max = 999; inp.step = 0.1;
+      inp.value = bodyweight || ''; inp.placeholder = 'кг';
+      valEl.replaceWith(inp); inp.focus(); inp.select();
+      function save() {
+        const v = parseFloat(inp.value);
+        bodyweight = isNaN(v) ? null : v;
+        persist();
+        const span = document.createElement('span');
+        span.id = 'valBodyweight'; span.className = 'stat-chip-val';
+        span.textContent = bodyweight != null ? `${bodyweight} кг` : '— кг';
+        inp.replaceWith(span);
+      }
+      inp.addEventListener('blur', save);
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') inp.blur();
+        if (e.key === 'Escape') { inp.value = ''; inp.blur(); }
       });
-
-      let lpTimer = null, lpMoved = false;
-      chip.addEventListener('touchstart', e => {
-        lpMoved = false;
-        lpTimer = setTimeout(() => {
-          if (lpMoved) return;
-          if (!$('recTip').classList.contains('open')) showRecTip(exName, chip, isBw);
-        }, 500);
-      }, { passive: true });
-      chip.addEventListener('touchmove', () => { lpMoved = true; clearTimeout(lpTimer); }, { passive: true });
-      chip.addEventListener('touchend', () => clearTimeout(lpTimer), { passive: true });
-      chip.addEventListener('touchcancel', () => clearTimeout(lpTimer), { passive: true });
-
-      chip.addEventListener('click', () => {
-        const tip = $('recTip');
-        if (tip && tip.classList.contains('open')) { tip.classList.remove('open'); return; }
-        const currentValEl = $(valId);
-        if (!currentValEl || currentValEl.tagName === 'INPUT') return;
-        
-        const inp = document.createElement('input');
-        inp.className = 'chip-input'; inp.type = 'number'; inp.inputMode = 'decimal'; inp.min = 0; inp.max = 9999; inp.step = 0.5;
-        inp.value = getValFn() || ''; inp.placeholder = 'кг';
-        currentValEl.replaceWith(inp); inp.focus(); inp.select();
-        let saved = false;
-
-        function closeInput() {
-          if (saved) return; saved = true;
-          const curVal = getValFn();
-          const span = document.createElement('span');
-          span.id = valId; span.className = isBw ? 'stat-chip-val' : 'stat-chip-val highlight';
-          span.textContent = curVal != null ? `${curVal} кг` : '— кг';
-          inp.replaceWith(span);
-        }
-
-        function save() {
-          if (saved) return;
-          const v = parseFloat(inp.value.replace(',', '.'));
-          if (!isNaN(v) && v > 0) {
-             const today = dateToKey(new Date());
-             saveValFn(v, today);
-             persist();
-          }
-          closeInput();
-          renderHdrStats();
-        }
-        inp.addEventListener('blur', save);
-        inp.addEventListener('keydown', e => {
-          if (e.key === 'Enter') inp.blur();
-          if (e.key === 'Escape') { saved = true; closeInput(); }
-        });
-      });
-    }
-
-    setupStatChip('Вес атлета', true, 'valBodyweight', bwVal, (v, today) => {
-       const last = bodyweight.length ? bodyweight[bodyweight.length - 1] : null;
-       if (last && last.value === v) last.date = today;
-       else if (last && last.date === today) last.value = v;
-       else bodyweight.push({ value: v, date: today });
     });
 
+    // Клик по рекорду
     REC_EX.forEach(({ ex, id }) => {
-      setupStatChip(ex, false, id, () => recVal(ex), (v, today) => {
-         if (!Array.isArray(records[ex])) records[ex] = [];
-         const r = records[ex];
-         const last = r.length ? r[r.length - 1] : null;
-         if (last && last.date === null && last.value === v) last.date = today;
-         else r.push({ value: v, date: today });
+      const chipId = 'chip-' + id;
+      const chipEl = $(chipId);
+      if (!chipEl) return;
+      chipEl.addEventListener('click', () => {
+        const rec = records[ex];
+        if (rec && rec.date) {
+           const parts = rec.date.split('-');
+           const dObj  = new Date(parts[0], parts[1]-1, parts[2]);
+           anchorMonday = getMondayOf(dObj);
+           renderCalendar();
+           const dayEl = $('day-' + rec.date);
+           if (dayEl) {
+              const exChip = Array.from(dayEl.querySelectorAll('.day-chip')).find(c => c.dataset.ex === ex);
+              if (exChip) {
+                 document.querySelectorAll('.day-chip').forEach(d => d.style.boxShadow = '');
+                 exChip.style.boxShadow = 'inset 4px 0 0 var(--accent)';
+                 setTimeout(() => { if (exChip) exChip.style.boxShadow = ''; }, 2000);
+              }
+           }
+        } else {
+           if (!elMbg.classList.contains('open')) {
+              anchorMonday = getMondayOf(now);
+              renderCalendar();
+           }
+        }
       });
     });
 
@@ -1611,7 +1501,8 @@
       if (!daySets?.length) return [];
       const exMap = {};
       daySets.forEach(s => { if (!exMap[s.exercise]) exMap[s.exercise] = []; exMap[s.exercise].push(s); });
-      return Object.keys(exMap).map(ex => {
+      const ordered = [...new Set(daySets.map(s => s.exercise))];
+      return ordered.map(ex => {
         const exSets = exMap[ex];
         const maxWt  = Math.max(...exSets.map(s => parseFloat(s.weight) || 0));
         const sorted = [...exSets].sort((a,b) => a.set_number - b.set_number);
@@ -1623,10 +1514,11 @@
           }
           return `<span class="chip-set-val" style="${style}">${v}</span>`;
         }).join('');
-        const pctRatio = recVal(ex) != null && maxWt > 0 ? maxWt / recVal(ex) : null;
+        const curRecWt = records[ex] ? (typeof records[ex] === 'object' ? records[ex].weight : records[ex]) : null;
+        const pctRatio = curRecWt != null && maxWt > 0 ? maxWt / curRecWt : null;
         const wtColor  = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt)';
         const weightHTML = maxWt > 0
-          ? `<span style="color:${wtColor}">${maxWt}</span><span style="font-size:13px;color:var(--txt2);margin:0 0 0 1px;font-family:'Barlow Condensed',sans-serif;font-weight:500">×</span>`
+          ? `<span style="color:${wtColor}">${maxWt}</span><span style="font-size:13px;color:var(--txt3);margin:0 0 0 1px;font-family:'Barlow',sans-serif">×</span>`
           : '';
         return { label: ex, weight: weightHTML, sets: setsHTML };
       });
@@ -1642,22 +1534,14 @@
       return byDate;
     }
 
-    function buildChipEl(item, idx, onClick) {
-      const chip = document.createElement('div');
-      chip.className = 'day-chip' + (idx === 0 ? ' main' : '');
-      chip.innerHTML = `<span class="chip-label">${item.label}</span><div class="chip-metrics">${item.weight ? `<span class="chip-weight">${item.weight}</span>` : ''}<span class="chip-sets">${item.sets}</span></div>`;
-      chip.addEventListener('click', onClick);
-      return chip;
-    }
-
     function getMaxChips() {
-      
-      let cellH = isMob() ? 136 : 130;
-      if (!isMob()) {
+      const isMob = window.innerWidth <= 600;
+      let cellH = isMob ? 136 : 130;
+      if (!isMob) {
         const h = document.body.clientHeight - 100;
         if (h > 0) cellH = h / 4;
       }
-      const max = Math.floor((cellH - (isMob() ? 16 : 14)) / 21);
+      const max = Math.floor((cellH - (isMob ? 16 : 14)) / 21);
       return max < 4 ? 4 : max;
     }
 
@@ -1671,7 +1555,11 @@
       const showCount = total > MAX ? MAX - 1 : total;
 
       exList.slice(0, showCount).forEach((item, idx) => {
-        const chip = buildChipEl(item, idx, e => { e.stopPropagation(); openDay(k, item.label); });
+        const chip = document.createElement('span');
+        chip.className = 'day-chip' + (idx === 0 ? ' main' : '');
+        chip.dataset.ex = item.label;
+        chip.innerHTML = `<span class="chip-label">${item.label}</span><div class="chip-metrics">${item.weight ? `<span class="chip-weight">${item.weight}</span>` : ''}<span class="chip-sets">${item.sets}</span></div>`;
+        chip.addEventListener('click', e => { e.stopPropagation(); openDay(k, item.label); });
         el.appendChild(chip);
       });
 
@@ -1768,7 +1656,10 @@
       const list = $('ovList');
       list.innerHTML = '';
       exList.forEach((item, idx) => {
-        const chip = buildChipEl(item, idx, () => { closeOverflowPop(); openDay(dateKey, item.label); });
+        const chip = document.createElement('div');
+        chip.className = 'day-chip' + (idx === 0 ? ' main' : '');
+        chip.innerHTML = `<span class="chip-label">${item.label}</span><div class="chip-metrics">${item.weight ? `<span class="chip-weight">${item.weight}</span>` : ''}<span class="chip-sets">${item.sets}</span></div>`;
+        chip.addEventListener('click', () => { closeOverflowPop(); openDay(dateKey, item.label); });
         list.appendChild(chip);
       });
       const rect = anchor.getBoundingClientRect();
@@ -1796,15 +1687,18 @@
       syncORM();
       loadDayData();
       elMbg.classList.add('open');
+      history.pushState({ modalOpen: true }, '', '#day-' + dateStr);
     }
 
     function closeDayModal() {
       if (!elMbg.classList.contains('open')) return;
       elMbg.classList.remove('open');
+      if (history.state?.modalOpen) history.back();
     }
 
     $('modalClose').addEventListener('click', closeDayModal);
     elMbg.addEventListener('click', e => { if (e.target === elMbg) closeDayModal(); });
+    window.addEventListener('popstate', () => { elMbg.classList.remove('open'); });
 
     // ── Select упражнений ──
     function sortedExercises() {
@@ -1827,222 +1721,47 @@
 
     function syncORM() {
       const ex = elExSelect.value;
-      const v = recVal(ex);
-      elInORM.value = v != null ? v : '';
+      const rec = records[ex];
+      const curRecWt = (rec && typeof rec === 'object' && rec.weight) ? rec.weight : (typeof rec === 'number' ? rec : null);
+      elInORM.value = curRecWt != null ? curRecWt : '';
+    }
+
+    // ── Helper для проверки и сохранения рекордов ──
+    function checkNewRecord(ex) {
+      if (!REC_EX.some(r => r.ex === ex)) return;
+      const exSets = (setsByDate[curDate] || []).filter(sx => sx.exercise === ex);
+      const validWeights = exSets.filter(sx => sx.fact >= 1 && sx.plan === 1 && sx.weight > 0).map(sx => parseFloat(sx.weight));
+      if (!validWeights.length) return;
+      const maxWt = Math.max(...validWeights);
+      const rec = records[ex];
+      const curRecWt = (rec && typeof rec === 'object' && rec.weight) ? rec.weight : (typeof rec === 'number' ? rec : 0);
+      
+      if (maxWt > curRecWt) {
+         records[ex] = { weight: maxWt, date: curDate };
+         persist();
+         renderHdrStats();
+         syncORM();
+      }
     }
 
     elExSelect.addEventListener('change', syncORM);
 
-    let ormTimer = null;
-    elInORM.addEventListener('input', () => {
-      clearTimeout(ormTimer);
-      ormTimer = setTimeout(() => {
-        const ex = elExSelect.value;
-        const v  = parseFloat(elInORM.value.replace(',', '.'));
-        if (!isNaN(v) && v > 0) {
-          if (!Array.isArray(records[ex])) records[ex] = [];
-          const r = records[ex];
-          if (r.length > 0) {
-            let last = r[r.length - 1];
-            if (last.date === null) {
-              last.value = v;
-              if (r.length > 1 && r[r.length - 2].value === v) r.pop();
-            } else if (last.value !== v) {
-              r.push({ value: v, date: null });
-            }
-          } else {
-            r.push({ value: v, date: null });
-          }
-        }
-        persist(); renderHdrStats();
-      }, 500);
-    });
-
-    // ── Кнопка «Сохранить в рекорды» ──
-    $('saveRecBtn').addEventListener('click', () => {
-      const ex  = elExSelect.value;
-      if (!ex) return;
-      const v = parseFloat(elInORM.value.replace(',', '.'));
-      if (isNaN(v) || v <= 0) {
-        elInORM.focus();
-        elInORM.style.borderColor = 'var(--red)';
-        setTimeout(() => elInORM.style.borderColor = '', 1200);
-        return;
-      }
-
-      const today = dateToKey(new Date());
-      let existingValue = null;
-      let alreadySavedToday = false;
-      const r = records[ex];
-
-      if (Array.isArray(r) && r.length > 0) {
-        const last = r[r.length - 1];
-        if (last.date === null) {
-          existingValue = r.length > 1 ? r[r.length - 2].value : null;
-          const formalLast = r.length > 1 ? r[r.length - 2] : null;
-          if (formalLast && formalLast.date === today && formalLast.value === v) alreadySavedToday = true;
-        } else {
-          existingValue = last.value;
-          if (last.date === today && last.value === v) alreadySavedToday = true;
-        }
-      }
-
-      if (alreadySavedToday) {
-         elInORM.style.borderColor = 'var(--green)';
-         setTimeout(() => elInORM.style.borderColor = '', 1200);
-         return;
-      }
-
-      function doSave() {
-        if (!Array.isArray(records[ex])) records[ex] = [];
-        const r2 = records[ex];
-        const last2 = r2.length ? r2[r2.length - 1] : null;
-        if (last2 && last2.date === null && last2.value === v) {
-          last2.date = today;
-        } else {
-          r2.push({ value: v, date: today });
-        }
-        persist(); renderHdrStats();
-      }
-
-      if (existingValue != null) {
-        let tmTitle = 'Перезаписать рекорд?';
-        let tmMsg = `${ex}\nБыло: ${existingValue} кг → Станет: ${v} кг`;
-        let confirmMsg = `Перезаписать рекорд?\n${ex}\nБыло: ${existingValue} кг → Станет: ${v} кг`;
-        
-        if (existingValue === v) {
-          tmTitle = 'Обновить дату?';
-          tmMsg = `${ex}\nПодтвердить прежний рекорд ${v} кг сегодняшним днем?`;
-          confirmMsg = `${tmTitle}\n${tmMsg}`;
-        }
-
-        if (isTg) {
-          TM.showPopup({
-            title: tmTitle,
-            message: tmMsg,
-            buttons: [
-              { id: 'ok',     type: 'default', text: 'Сохранить' },
-              { id: 'cancel', type: 'cancel' }
-            ]
-          }, id => { if (id === 'ok') doSave(); });
-        } else {
-          if (confirm(confirmMsg)) doSave();
-        }
+    elInORM.addEventListener('change', () => {
+      const ex = elExSelect.value;
+      const v  = parseFloat(elInORM.value);
+      if (!isNaN(v) && v > 0) {
+         records[ex] = { weight: v, date: curDate };
+         persist(); 
+         renderHdrStats();
+         if (curDate) loadDayData();
+      } else if (elInORM.value === '') {
+         delete records[ex];
+         persist(); 
+         renderHdrStats();
+         if (curDate) loadDayData();
       } else {
-        doSave();
+         syncORM();
       }
-    });
-
-    // ── Тултип рекорда при клике на чип в шапке ──
-    const elRecTip = $('recTip');
-    let lastRecAnchor = null;
-    let recTipIsBw = false;
-    function showRecTip(ex, anchor, isBw = false) {
-      lastRecAnchor = anchor;
-      recTipIsBw = isBw;
-      const r = isBw ? bodyweight : records[ex];
-      if (!r) return;
-      const entries = Array.isArray(r) ? r : [{ value: typeof r === 'object' ? r.value : r, date: typeof r === 'object' ? r.date : null }];
-      if (!entries.length) return;
-
-      let html = `<div class="rec-tip-label">${ex} — история</div>`;
-      // показываем от новых к старым
-      [...entries].reverse().forEach((entry, idx) => {
-        const realIdx = entries.length - 1 - idx;
-        const isLatest = idx === 0;
-        let dateStr = '—';
-        if (entry.date) {
-          const [y, mo, d] = entry.date.split('-');
-          dateStr = `${d} ${MONTHS[parseInt(mo)-1]} ${y}`;
-        }
-        html += `<div class="rec-tip-row${isLatest ? ' latest' : ''}" data-ex="${ex}" data-idx="${realIdx}">
-          <span class="rec-tip-row-val">${entry.value} кг</span>
-          <span class="rec-tip-row-date">${dateStr}</span>
-        </div>`;
-      });
-      elRecTip.innerHTML = html;
-
-      elRecTip.classList.add('open');
-      const rect = anchor.getBoundingClientRect();
-      let left = rect.left;
-      let top  = rect.bottom + 6;
-      const tw = elRecTip.offsetWidth || 200;
-      const th = elRecTip.offsetHeight || 120;
-      if (left + tw > window.innerWidth  - 8) left = window.innerWidth  - tw - 8;
-      if (top  + th > window.innerHeight - 8) top  = rect.top - th - 6;
-      elRecTip.style.left = left + 'px';
-      elRecTip.style.top  = top  + 'px';
-    }
-
-
-    // ── Контекстное меню истории рекордов ──
-    let recCtxTarget = { ex: null, idx: null, isBw: false };
-
-    elRecTip.addEventListener('contextmenu', e => {
-      const row = e.target.closest('.rec-tip-row');
-      if (!row) return;
-      e.preventDefault();
-      recCtxTarget = { ex: row.dataset.ex, idx: parseInt(row.dataset.idx), isBw: recTipIsBw };
-      const x = Math.min(e.clientX, window.innerWidth  - 180);
-      const y = Math.min(e.clientY, window.innerHeight - 100);
-      elRecCtxMenu.style.left = x + 'px';
-      elRecCtxMenu.style.top  = y + 'px';
-      elRecCtxMenu.classList.add('open');
-    });
-
-    let recLpTimer = null, recLpMoved = false;
-    elRecTip.addEventListener('touchstart', e => {
-      const row = e.target.closest('.rec-tip-row');
-      if (!row) return;
-      recLpMoved = false;
-      recLpTimer = setTimeout(() => {
-        if (recLpMoved) return;
-        recCtxTarget = { ex: row.dataset.ex, idx: parseInt(row.dataset.idx), isBw: recTipIsBw };
-        const touch = e.touches[0];
-        const x = Math.min(touch.clientX, window.innerWidth  - 180);
-        const y = Math.min(touch.clientY, window.innerHeight - 100);
-        elRecCtxMenu.style.left = x + 'px';
-        elRecCtxMenu.style.top  = y + 'px';
-        elRecCtxMenu.classList.add('open');
-      }, 500);
-    }, { passive: true });
-    elRecTip.addEventListener('touchmove', () => { recLpMoved = true; clearTimeout(recLpTimer); }, { passive: true });
-    elRecTip.addEventListener('touchend', () => clearTimeout(recLpTimer), { passive: true });
-    elRecTip.addEventListener('touchcancel', () => clearTimeout(recLpTimer), { passive: true });
-
-    $('recCtxEdit').addEventListener('click', () => {
-      if (!recCtxTarget.ex || recCtxTarget.idx == null) return;
-      const r = recCtxTarget.isBw ? bodyweight : records[recCtxTarget.ex];
-      if (Array.isArray(r) && r[recCtxTarget.idx]) {
-        const resp = prompt('Новый вес (кг):', r[recCtxTarget.idx].value);
-        if (resp !== null && resp.trim() !== '') {
-          const newVal = parseFloat(resp.replace(',', '.'));
-          if (!isNaN(newVal) && newVal > 0) {
-            r[recCtxTarget.idx].value = newVal;
-            persist(); renderHdrStats();
-            if (elRecTip.classList.contains('open')) showRecTip(recCtxTarget.ex, lastRecAnchor, recCtxTarget.isBw);
-          }
-        }
-      }
-      elRecCtxMenu.classList.remove('open');
-    });
-
-    $('recCtxDel').addEventListener('click', () => {
-      if (!recCtxTarget.ex || recCtxTarget.idx == null) return;
-      const r = recCtxTarget.isBw ? bodyweight : records[recCtxTarget.ex];
-      if (Array.isArray(r) && r[recCtxTarget.idx]) {
-        if (confirm('Удалить эту запись?')) {
-          r.splice(recCtxTarget.idx, 1);
-          if (r.length === 0 && !recCtxTarget.isBw) delete records[recCtxTarget.ex];
-          persist(); renderHdrStats();
-          if (elRecTip.classList.contains('open') && r.length > 0) {
-            showRecTip(recCtxTarget.ex, lastRecAnchor, recCtxTarget.isBw);
-          } else {
-            elRecTip.classList.remove('open');
-          }
-        }
-      }
-      elRecCtxMenu.classList.remove('open');
     });
 
     // ── Листбокс упражнений в дропдауне ──
@@ -2057,6 +1776,7 @@
         div.addEventListener('click', () => {
           selEx = ex;
           elExSelect.value = ex;
+          syncORM();
           elExListbox.querySelectorAll('.ex-listbox-item').forEach(d => d.classList.remove('sel'));
           div.classList.add('sel');
           elEditorDrop.classList.remove('open');
@@ -2096,14 +1816,14 @@
       elEditorDrop.classList.remove('open');
       if (!isOpen) {
         const rect   = e.currentTarget.getBoundingClientRect();
-        
+        const isMob  = window.innerWidth <= 600;
         const dropW  = Math.max(300, rect.width);
         elEditorDrop.style.width = dropW + 'px';
         let left = rect.left;
         if (left + dropW > window.innerWidth - 8) left = window.innerWidth - dropW - 8;
         if (left < 8) left = 8;
         elEditorDrop.style.left = left + 'px';
-        if (isMob()) {
+        if (isMob) {
           elEditorDrop.style.top    = 'auto';
           elEditorDrop.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
           elEditorDrop.style.width  = (window.innerWidth - 16) + 'px';
@@ -2131,7 +1851,7 @@
       if (!exercises.includes(v)) {
         exercises.push(v);
         persist(); buildExSelect(); renderExListbox();
-        elExSelect.value = v; syncORM();
+        elExSelect.value = v;
       }
       elEdInputRow.style.display = 'none';
       elEditorDrop.classList.remove('open');
@@ -2184,9 +1904,10 @@
         renderHdrStats(); return;
       }
 
-      const countMap = {};
-      daySet.forEach(s => { countMap[s.exercise] = (countMap[s.exercise] || 0) + 1; });
-      const maxSets = daySet.length ? Math.max(...Object.values(countMap)) : 0;
+      const maxSets = exOrder.reduce((m, ex) => {
+        const cnt = daySet.filter(s => s.exercise === ex).length;
+        return cnt > m ? cnt : m;
+      }, 0);
 
       const table = document.createElement('table');
       table.className = 'workout-table';
@@ -2205,7 +1926,8 @@
         const exSets  = daySet.filter(s => s.exercise === ex).sort((a,b) => a.set_number - b.set_number);
         const maxWt   = Math.max(...exSets.map(s => parseFloat(s.weight) || 0));
         const weight  = maxWt > 0 ? maxWt : null;
-        const pctRatio = recVal(ex) != null && weight != null ? weight / recVal(ex) : null;
+        const curRecWt = records[ex] ? (typeof records[ex] === 'object' ? records[ex].weight : records[ex]) : null;
+        const pctRatio = curRecWt != null && weight != null ? weight / curRecWt : null;
         const pct      = pctRatio != null ? Math.round(pctRatio * 100) + '%' : '—';
         const pctColor = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt3)';
 
@@ -2324,13 +2046,15 @@
           const newWt = isNaN(v) ? null : v;
           (setsByDate[curDate] || []).filter(s => s.exercise === ex).forEach(s => s.weight = newWt);
           tdWt.textContent = newWt != null ? newWt + ' кг' : '—';
-          const pctRatio = recVal(ex) != null && newWt != null ? newWt / recVal(ex) : null;
+          const curRecWt = records[ex] ? (typeof records[ex] === 'object' ? records[ex].weight : records[ex]) : null;
+          const pctRatio = curRecWt != null && newWt != null ? newWt / curRecWt : null;
           const tdPct = tr.querySelector('.td-pct');
           if (tdPct) {
             tdPct.style.color = pctRatio != null ? (pctRatio >= 0.8 ? 'var(--red)' : pctRatio >= 0.6 ? 'var(--yellow)' : 'var(--green)') : 'var(--txt3)';
             tdPct.textContent = pctRatio != null ? Math.round(pctRatio * 100) + '%' : '—';
           }
           persist(); updateDayInCalendar(curDate);
+          checkNewRecord(ex);
         }
         inp.addEventListener('blur', saveWt);
         inp.addEventListener('keydown', ev => {
@@ -2351,7 +2075,7 @@
         const oldVal = s.plan != null ? s.plan : '';
         const inp = document.createElement('input');
         inp.type = 'number'; inp.inputMode = 'numeric'; inp.min = 0; inp.max = 999;
-        inp.style.cssText = 'width:28px;border:none;background:transparent;font-family:"Barlow Condensed",sans-serif;font-size:14px;font-weight:500;color:var(--accent);outline:none;box-shadow:none;-webkit-appearance:none;appearance:none;text-align:center;padding:0;';
+        inp.style.cssText = 'width:28px;border:none;background:transparent;font-family:"Barlow Condensed",sans-serif;font-size:14px;font-weight:700;color:var(--accent);outline:none;box-shadow:none;-webkit-appearance:none;appearance:none;text-align:center;padding:0;';
         inp.value = oldVal; inp.placeholder = '—';
         planEl.textContent = ''; planEl.appendChild(inp);
         inp.focus(); inp.select();
@@ -2380,6 +2104,7 @@
         const ex = tdName.textContent.trim();
         if (exercises.includes(ex)) {
           elExSelect.value = ex;
+          syncORM();
           // подсветить строку
           document.querySelectorAll('.workout-table tbody tr').forEach(r => r.style.outline = '');
           tdName.closest('tr').style.outline = '1.5px solid var(--accent)';
@@ -2401,6 +2126,7 @@
         s.fact = inp.value !== '' ? parseInt(inp.value) : null;
         updateFactColors(s, inp);
         persist(); updateDayInCalendar(curDate);
+        checkNewRecord(s.exercise);
       }, 400);
     });
 
@@ -2620,10 +2346,8 @@
       elCtxMenu.classList.remove('open');
       elExCtxMenu.classList.remove('open');
       elDayCtx.classList.remove('open');
-      elRecCtxMenu.classList.remove('open');
       if (!elEditorDrop.contains(e.target) && e.target !== elExSelect) elEditorDrop.classList.remove('open');
       if (elOverflowPop.classList.contains('open') && !elOverflowPop.contains(e.target)) closeOverflowPop();
-      if (elRecTip.classList.contains('open') && !elRecTip.contains(e.target)) elRecTip.classList.remove('open');
     });
 
     document.addEventListener('keydown', e => {
@@ -2631,8 +2355,6 @@
         elCtxMenu.classList.remove('open');
         elExCtxMenu.classList.remove('open');
         elDayCtx.classList.remove('open');
-        elRecCtxMenu.classList.remove('open');
-        elRecTip.classList.remove('open');
         cancelCopy();
         closeOverflowPop();
       }
@@ -2644,7 +2366,7 @@
       const hdr    = document.querySelector('.modal-hdr');
       let startY = 0, currentY = 0, dragging = false;
 
-      
+      function isMob() { return window.innerWidth <= 600; }
 
       function onStart(e) {
         if (!isMob()) return;
