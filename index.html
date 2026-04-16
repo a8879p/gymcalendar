@@ -78,6 +78,7 @@
       padding: 4px 12px;
       line-height: 1;
       transition: background 0.15s, color 0.15s;
+      -webkit-app-region: no-drag;
     }
     .nav-btn:hover { background: var(--border2); color: #fff }
 
@@ -114,6 +115,7 @@
       flex: 1;
       min-width: 0;
       max-width: 150px;
+      -webkit-app-region: no-drag;
     }
     .stat-chip:hover { background: var(--surface2); border-color: var(--accent) }
 
@@ -1453,27 +1455,46 @@
       const chipEl = $(chipId);
       if (!chipEl) return;
       chipEl.addEventListener('click', () => {
+        const valEl = $(id);
+        if (!valEl || valEl.tagName === 'INPUT') return;
+
         const rec = records[ex];
-        if (rec && rec.date) {
-           const parts = rec.date.split('-');
-           const dObj  = new Date(parts[0], parts[1]-1, parts[2]);
-           anchorMonday = getMondayOf(dObj);
-           renderCalendar();
-           const dayEl = $('day-' + rec.date);
-           if (dayEl) {
-              const exChip = Array.from(dayEl.querySelectorAll('.day-chip')).find(c => c.dataset.ex === ex);
-              if (exChip) {
-                 document.querySelectorAll('.day-chip').forEach(d => d.style.boxShadow = '');
-                 exChip.style.boxShadow = 'inset 4px 0 0 var(--accent)';
-                 setTimeout(() => { if (exChip) exChip.style.boxShadow = ''; }, 2000);
-              }
-           }
-        } else {
-           if (!elMbg.classList.contains('open')) {
-              anchorMonday = getMondayOf(now);
-              renderCalendar();
-           }
+        const w = (rec !== null && typeof rec === 'object' && rec.weight) ? rec.weight : (typeof rec === 'number' ? rec : null);
+
+        const inp = document.createElement('input');
+        inp.className = 'chip-input'; 
+        inp.type = 'number'; 
+        inp.inputMode = 'decimal'; 
+        inp.min = 0; inp.max = 9999; inp.step = 0.5;
+        inp.value = w != null ? w : ''; 
+        inp.placeholder = 'кг';
+        
+        valEl.replaceWith(inp); 
+        inp.focus(); 
+        inp.select();
+
+        function save() {
+          const v = parseFloat(inp.value);
+          const newWt = isNaN(v) ? null : v;
+          if (newWt !== null) {
+            records[ex] = { weight: newWt, date: (rec && typeof rec === 'object' ? rec.date : null) };
+          } else {
+            delete records[ex];
+          }
+          persist();
+          
+          const span = document.createElement('span');
+          span.id = id; 
+          span.className = 'stat-chip-val highlight';
+          span.textContent = newWt != null ? `${newWt} кг` : '— кг';
+          inp.replaceWith(span);
         }
+        
+        inp.addEventListener('blur', save);
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Enter') inp.blur();
+          if (e.key === 'Escape') { inp.value = w != null ? w : ''; inp.blur(); }
+        });
       });
     });
 
@@ -1730,7 +1751,7 @@
     function checkNewRecord(ex) {
       if (!REC_EX.some(r => r.ex === ex)) return;
       const exSets = (setsByDate[curDate] || []).filter(sx => sx.exercise === ex);
-      const validWeights = exSets.filter(sx => sx.fact >= 1 && sx.plan === 1 && sx.weight > 0).map(sx => parseFloat(sx.weight));
+      const validWeights = exSets.filter(sx => sx.fact >= 1 && sx.weight > 0).map(sx => parseFloat(sx.weight));
       if (!validWeights.length) return;
       const maxWt = Math.max(...validWeights);
       const rec = records[ex];
@@ -2282,7 +2303,7 @@
         });
       } else if (hasTarget) {
         const choice = confirm('В этот день уже есть подходы.\nОК = Заменить, Отмена = Добавить к существующим');
-        doInsert(choice);
+        doInsert(!choice);
       } else {
         doInsert(false);
       }
