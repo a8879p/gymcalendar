@@ -2393,7 +2393,7 @@
         // Вес
         const tdWt = document.createElement('td');
         tdWt.className = 'td-weight';
-        tdWt.textContent = weight != null ? weight + ' кг' : '—';
+        tdWt.textContent = weight != null ? weight : '—';
         tr.appendChild(tdWt);
 
         // Подходы
@@ -2482,7 +2482,7 @@
           const v = parseFloat(inp.value);
           const newWt = isNaN(v) ? null : v;
           (setsByDate[curDate] || []).filter(s => s.exercise === ex).forEach(s => s.weight = newWt);
-          tdWt.textContent = newWt != null ? newWt + ' кг' : '—';
+          tdWt.textContent = newWt != null ? newWt : '—';
           const curRecWt = records[ex] ? (typeof records[ex] === 'object' ? records[ex].weight : records[ex]) : null;
           const pctRatio = curRecWt != null && curRecWt > 0 && newWt != null ? newWt / curRecWt : null;
           const tdPct = tr.querySelector('.td-pct');
@@ -2496,7 +2496,7 @@
         inp.addEventListener('blur', saveWt);
         inp.addEventListener('keydown', ev => {
           if (ev.key === 'Enter')  { inp.blur(); }
-          if (ev.key === 'Escape') { saved = true; tdWt.textContent = maxWt != null ? maxWt + ' кг' : '—'; inp.blur(); }
+          if (ev.key === 'Escape') { saved = true; tdWt.textContent = maxWt != null ? maxWt : '—'; inp.blur(); }
           ev.stopPropagation();
         });
         inp.addEventListener('click', ev => ev.stopPropagation());
