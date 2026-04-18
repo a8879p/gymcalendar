@@ -1366,8 +1366,8 @@
             <span class="input-label">Вес (кг)</span>
             <input class="input-num" id="inWt" type="number" inputmode="decimal" min="0" max="9999" step="0.5" placeholder="0">
             <div style="flex:1"></div>
-            <span id="epleeLabel" style="display:none;color:var(--green);font-size:11px;font-weight:700;flex-shrink:0;text-transform:uppercase;letter-spacing:0.04em">РПМ</span>
-            <div id="epleeCalc" style="display:none;align-items:center;justify-content:center;background:rgba(0,229,122,.08);border:1px solid rgba(0,229,122,.3);border-radius:8px;padding:8px 10px;flex-shrink:0;width:64px;height:30px">
+            <span id="epleeLabel" style="display:inline;color:var(--green);font-size:11px;font-weight:700;flex-shrink:0;text-transform:uppercase;letter-spacing:0.04em">РПМ</span>
+            <div id="epleeCalc" style="display:flex;align-items:center;justify-content:center;background:rgba(0,229,122,.08);border:1px solid rgba(0,229,122,.3);border-radius:8px;padding:8px 10px;flex-shrink:0;width:64px;height:30px">
               <span id="epleeVal" style="font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;color:var(--green);white-space:nowrap"></span>
             </div>
           </div>
@@ -2096,6 +2096,7 @@
       elInWt.value   = '';
       buildExSelect(preselect);
       syncORM();
+      updateEpley();
       loadDayData();
       elMbg.classList.add('open');
       history.pushState({ modalOpen: true }, '', '#day-' + dateStr);
@@ -2169,14 +2170,13 @@
       const chip  = $('epleeCalc');
       const val   = $('epleeVal');
       const label = $('epleeLabel');
+      chip.style.display  = 'flex';
+      label.style.display = 'inline';
       if (!isNaN(wt) && wt > 0 && !isNaN(reps) && reps >= 1) {
         const calc = reps === 1 ? wt : Math.round(wt * (1 + reps / 30) * 10) / 10;
         val.textContent = `${calc}`;
-        chip.style.display  = 'flex';
-        label.style.display = 'inline';
       } else {
-        chip.style.display  = 'none';
-        label.style.display = 'none';
+        val.textContent = '0';
       }
     }
     elInWt.addEventListener('input', updateEpley);
